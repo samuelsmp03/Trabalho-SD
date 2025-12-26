@@ -20,7 +20,7 @@ class PlayerState:
 		color = p_color_hex 
 		connected = true
 
-	#Converte o objeto PlayerState para dicionário
+	# converte o objeto PlayerState para dicionário
 	func to_dict() -> Dictionary:
 		return {
 			"peer_id": peer_id,
@@ -55,7 +55,7 @@ class RoomState:
 		target_player_count = p_target_player_count
 		board_dimension = p_board_dim 
 		
-	# Converte o objeto RoomState para um dicionário 
+	# converte o objeto RoomState para um dicionário 
 	func to_dict() -> Dictionary:
 		return {
 			"id": id,
