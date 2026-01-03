@@ -5,8 +5,8 @@ extends RefCounted
 
 # ----- LOBBY/GERENCIAMENTO -----
 
-const CREATE_ROOM = "create_room"
-const JOIN_ROOM = "join_room"
+const REQUEST_CREATE_ROOM = "create_room"
+const REQUEST_JOIN_ROOM = "join_room"
 const UPDATE_PLAYER_CONFIG = "update_player_config"
 const START_GAME = "start_game"
 
@@ -16,12 +16,14 @@ const START_GAME = "start_game"
 
 #Mensagem que o servidor envia para atualizar o estado da sala (lista de players)
 const ROOM_INFO_UPDATE = "room_info_update"
+const RECEIVE_ROOM_UPDATE = "receive_room_update"
+
 # Mensagem que o servidor envia para notificar a mudança de turno.
 const UPDATE_TURN_INFO = "update_turn_info"  #alterar isso no documento, pq lá t pass_token
 
 # ---- LOGICA DO JOGO -----
-const CLIENT_PLAY = "client_play" #cliente envia jogada para servidor
-const APPLY_REMOTE_MOVE = "apply_remote_move" #servidor envia jogada para os clientes aplicarem o movimento
+const MAKE_MOVE = "make_move" #cliente envia jogada para servidor
+const BROADCAST_MOVE = "broadcast_move" #servidor envia jogada para os clientes aplicarem o movimento
 
 # ---- FIM DE JOGO -----
 const NOTIFY_GAME_OVER = "notify_game_over"
@@ -43,11 +45,19 @@ static func create_room_config_payload(room_id:String, player_name:String, playe
 	}
 
 # O Tabuleiro tem forma (tipo, x, y), onde tipo é vertical ou horizontal
-static func create_move_payload(tipo:String, x: int, y:int) -> Dictionary:
+#MEnsagem padrão para as jogadas
+static func create_move_payload(tipo:String, x: int, y:int, has_scored:bool) -> Dictionary:
 	
 	#Não estamos enviando o jogador_id pq o servidor pode saber quem está enviando a mensagem usando get_tree().get_rpc_sender_id() 
 	return {
 		"move_type": tipo, # "H" ou "V"
 		"pos_x": x,
-		"pos_y": y
+		"pos_y": y,
+		"scored": has_scored
+	}
+static func create_join_game_payload(r_id: String, p_name:String, p_color:Color):
+	return {
+		"room_id": r_id,
+		"player_name": p_name,
+		"player_color": p_color.to_html(false)
 	}
