@@ -51,22 +51,12 @@ func _send_game_over(_payload: Dictionary):
 @rpc("any_peer")
 func start_game(): pass
 
-#@rpc("any_peer")
-#func request_create_room(_payload: Dictionary): pass
-
-#@rpc("any_peer")
-#func request_join_room(_payload: Dictionary): pass
-
 @rpc("any_peer")
 func receive_room_update(_room_data: Dictionary): 
 	#TODO: Aqui tem que chamar uma outra função pra atualizar a UI
 	pass
 
 
-
-
-#@rpc("any_peer")
-#func request_make_move(_payload: Dictionary): pass
 
 @rpc("any_peer")
 func broadcast_move(move_data: Dictionary):
