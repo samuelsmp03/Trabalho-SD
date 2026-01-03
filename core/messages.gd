@@ -5,31 +5,28 @@ extends RefCounted
 
 # ----- LOBBY/GERENCIAMENTO -----
 
-const REQUEST_CREATE_ROOM = "create_room"
-const REQUEST_JOIN_ROOM = "join_room"
-const UPDATE_PLAYER_CONFIG = "update_player_config"
+const REQUEST_CREATE_ROOM = "request_create_room"
+const REQUEST_JOIN_ROOM = "request_join_room"
+const REQUEST_ROOM_LIST = "request_room_list"
+const RECEIVE_ROOM_LIST = "receive_room_list"
 const START_GAME = "start_game"
+#adicionar player_config se precisarmos
 
-
-
-# ---- SINCRONIZAÇÃO DE ESTADO DA PARTIDA DO SERVIDOR -> CLIENTE -----
-
-#Mensagem que o servidor envia para atualizar o estado da sala (lista de players)
-const ROOM_INFO_UPDATE = "room_info_update"
+#---- Sala ----
 const RECEIVE_ROOM_UPDATE = "receive_room_update"
 
-# Mensagem que o servidor envia para notificar a mudança de turno.
-const UPDATE_TURN_INFO = "update_turn_info"  #alterar isso no documento, pq lá t pass_token
 
 # ---- LOGICA DO JOGO -----
-const MAKE_MOVE = "make_move" #cliente envia jogada para servidor
+const REQUEST_MAKE_MOVE = "request_make_move" #cliente envia jogada para servidor
 const BROADCAST_MOVE = "broadcast_move" #servidor envia jogada para os clientes aplicarem o movimento
 
 # ---- FIM DE JOGO -----
-const NOTIFY_GAME_OVER = "notify_game_over"
-const ON_GAME_OVER = "on_game_over"
-const RECONECCT_STATE_REQUEST = "reconnect_state_request"
-const RECONNECT_STATE_RESPONSE = "reconnect_state_response"
+const REQUEST_GAME_OVER = "request_game_over"   #Cliente notifica que o jogo acabou
+const BROADCAST_GAME_OVER = "broadcast_game_over"   #Servidor avisa a todos que o jogo acabou
+
+# ---- RECONEXÃO ----
+const REQUEST_RECONNECT_STATE = "request_reconnect_state"
+const RECEIVE_RECONNECT_STATE = "receive_reconnect_state"
 
 # ---- ESTRUTURA DOS PAYLOADS -----
 
@@ -61,3 +58,5 @@ static func create_join_game_payload(r_id: String, p_name:String, p_color:Color)
 		"player_name": p_name,
 		"player_color": p_color.to_html(false)
 	}
+
+#TODO: create_game_over_payload

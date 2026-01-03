@@ -11,7 +11,6 @@ enum PeerType {
 	SERVER
 }
 
-
 # Configuração de Jogadores
 
 const MIN_PLAYERS  = 2

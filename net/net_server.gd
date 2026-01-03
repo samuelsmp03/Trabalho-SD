@@ -11,7 +11,7 @@ var peer_to_room: Dictionary = {}  # Atalho mais rápido entre salas e jogadores
 
 
 # ---- Função de inicialização do servidor ----
-func setup_server (port: int):
+func _setup_server (port: int):
 	var peer = WebSocketMultiplayerPeer.new() #objeto de rede -> vai ser o servidor
 	
 	var error = peer.create_server(port) 
@@ -50,7 +50,7 @@ func _on_peer_disconnected(id:int):
 	
 # ---- Lógica da Sala ----
 
-#Função CREATE_ROOM chamada pelo CLIENTE para criar sala
+#Função REQUEST_CREATE_ROOM chamada pelo CLIENTE para criar sala
 # Exemplo do Payload que será feito no CLIENTE:
 #var meu_payload = {
 #    "room_id": "SALA_DA_AMANDA",
@@ -121,7 +121,7 @@ func request_join_room(payload:Dictionary):
 		print("Erro: O jogo na sala ", r_id, " já está em andamento.")
 		return
 
-	# 4. Se passou nas validações, adicionamos o jogador à sala
+	# Se passou nas validações, adicionamos o jogador à sala
 	room.players.append(sender_id)
 	peer_to_room[sender_id] = r_id
 	
@@ -132,15 +132,16 @@ func request_join_room(payload:Dictionary):
 	_send_room_info_update(r_id) #atualiza o lobby quando um novo jogador entrar
 	#Verificação de Início de Jogo
 	if room.players.size() == room.target_player_count:
-		room.status = GameConfig.RoomStatus.PLAYING
+		_begin_game(r_id)
 		
-		room.token_owner = room.players[0]
-		print("SALA CHEIA! O jogo na sala ", r_id, " vai começar agora.")
-		for p_id in room.players:
-			rpc_id(p_id, Messages.START_GAME)
-		_send_room_info_update(r_id) #envia uma ultima atualização para garantir que todos saibam quem começa a jogar
-
-#---------------------------------------------
+		
+		
+		
+		
+		
+		
+		
+#------ LGICA DO JOGO------------------------
 
 #Função MAKE_MOVE chamado pelo cliente quando ele clica para fazer uma linha
 @rpc("any_peer")
@@ -157,8 +158,9 @@ func request_make_move(payload: Dictionary):
 		return 
 	
 	#Transmitindo jogada + id do autor para os outros
-	var sync_data = payload
+	var sync_data = payload.duplicate()
 	sync_data["author_id"] = sender_id
+	sync_data["timestamp"] = Time.get_unix_time_from_system()
 	
 	# Primeiro envia a jogada para todos
 	for p_id in room.players:
@@ -169,29 +171,6 @@ func request_make_move(payload: Dictionary):
 		_next_turn(r_id)  #passa turno 
 	else:
 		_send_room_info_update(r_id)  #envia atualização da sala para todos. Inclusive a informação mas de quem está com o token
-
-
-@rpc("any_peer")
-func notify_game_over(payload: Dictionary): 
-	var sender_id = get_tree().get_multiplayer().get_remote_sender_id()
-
-	var r_id = peer_to_room.get(sender_id, "")
-	if r_id == "": 
-		return
-		
-	var room = rooms[r_id]
-	
-	if room.token_owner != sender_id:
-		print("Aviso de fim de jogo ignorado pois o player não era dono da vez") 
-		return
-	
-	room.status = GameConfig.RoomStatus.FINISHED
-	
-	print("FIM DE JOGO NA SALA: ", r_id)
-	
-	for p_id in room.players:
-		rpc_id(p_id, "on_game_over", payload)
-		
 
 @rpc("any_peer")
 func request_room_list():
@@ -208,12 +187,32 @@ func request_room_list():
 		}
 		list_of_rooms.append(info)
 	
-	rpc_id(sender_id, "receive_room_list", list_of_rooms)
-	
-		
-# ---- Funções Auxiliares ----
+	rpc_id(sender_id, Messages.RECEIVE_ROOM_LIST, list_of_rooms)
 
-#Função para atualizar estado do jogador.
+	
+	
+# ---- Funções INTERNAS (começam com _) ----
+func _handle_game_over(payload: Dictionary):
+	var sender_id = get_tree().get_multiplayer().get_remote_sender_id()
+
+	var r_id = peer_to_room.get(sender_id, "")
+	if r_id == "":
+		return
+
+	var room = rooms[r_id]
+
+	if room.token_owner != sender_id:
+		print("Aviso de fim de jogo ignorado pois o player não era dono da vez")
+		return
+
+	room.status = GameConfig.RoomStatus.FINISHED
+	print("FIM DE JOGO NA SALA: ", r_id)
+
+	for p_id in room.players:
+		rpc_id(p_id, Messages.BROADCAST_GAME_OVER, payload)
+
+
+#Função para atualizar estado do jogador, pq ele é criado sem alguns atributos. 
 func _update_player_session(p_id: int, p_name:String, p_color:String, r_id: String):
 	var p_state = players[p_id]
 	p_state.name = p_name
@@ -239,7 +238,7 @@ func _send_room_info_update(r_id: String):
 		
 	room_data["players_details"] = players_list
 	for p_id in room.players:
-		rpc_id(p_id, "receive_room_update", room_data)
+		rpc_id(p_id, Messages.RECEIVE_ROOM_UPDATE, room_data)
 	print("Atualização da sala ", r_id, " enviada para ", room.players.size(), " jogadores.")
 		
 
@@ -257,9 +256,25 @@ func _next_turn (r_id:String):
 	
 	#Sincronizando com todos
 	_send_room_info_update(r_id)
+	
+func _begin_game(room_id: String):
+	var room = rooms[room_id]
+	room.status = GameConfig.RoomStatus.PLAYING
+	room.token_owner = room.players[0]
+	
+	print("Iniciando jogo na sala: ", room_id)
+	
+	for player_id in room.players:
+		rpc_id(player_id, Messages.START_GAME)
+	
+	_send_room_info_update(room_id)
+	
 
-@rpc("any_peer") func start_game(): pass
-@rpc("any_peer") func receive_room_update(_data: Dictionary): pass
-@rpc("any_peer") func on_game_over(_data: Dictionary): pass
-@rpc("any_peer") func receive_move(_data: Dictionary): pass
-@rpc("any_peer") func receive_room_list(_list: Array): pass
+
+
+#RPC do cliente
+@rpc("any_peer") func request_game_over(_data: Dictionary):	 
+	_handle_game_over(_data)
+	pass
+
+#Todo: Reconexão: receive e request
