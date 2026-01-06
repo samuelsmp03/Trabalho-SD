@@ -30,12 +30,17 @@ func _get_rooms():
 	rpc_id(1, Messages.REQUEST_ROOM_LIST)  #Isso aqui não funciona ainda
 
 func _join_room(r_id, p_name, p_color:Color):
-	#TODO: Criar a mansagem e manda pro servidor -> create_join_game_payload
-	pass
+	#TODO: OK! Criar a mansagem e manda pro servidor -> create_join_game_payload
+	var payload = Messages.create_join_game_payload(r_id,p_name,p_color)
+	rpc_id(1,Messages.REQUEST_JOIN_ROOM,payload)
+	
+	
 func _make_move(tipo: String, x:int, y: int, scored:bool):
-	#TODO: Da mesma forma do anterior, também vai ter que criar a mensagem usando a função create_move_payload e depois fazer o rpc
-	pass
-		
+	#TODO: OK! Da mesma forma do anterior, também vai ter que criar a mensagem usando a função create_move_payload e depois fazer o rpc
+	var payload = Messages.create_move_payload(tipo,x,y,scored)
+	rpc_id(1,Messages.REQUEST_MAKE_MOVE,payload)
+	
+	
 func _apply_move(_move_data: Dictionary): 
 	# TODO: Essa função é local, recebe a jogada remota e aplica atualizando a UI
 	pass

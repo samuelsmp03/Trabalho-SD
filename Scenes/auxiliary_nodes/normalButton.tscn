@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cgyudqa0jrn1f"]
+
+[ext_resource type="FontFile" uid="uid://dai5fj1ja8e0p" path="res://assets/fonts/Swansea/SwanseaItalic-AwqD.ttf" id="1_532kv"]
+
+[node name="Button" type="Button"]
+offset_right = 174.0
+offset_bottom = 58.0
+theme_override_fonts/font = ExtResource("1_532kv")
+theme_override_font_sizes/font_size = 36
+text = "Criar Sala"

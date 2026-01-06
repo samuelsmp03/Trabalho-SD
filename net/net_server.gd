@@ -146,6 +146,7 @@ func request_join_room(payload:Dictionary):
 #Função MAKE_MOVE chamado pelo cliente quando ele clica para fazer uma linha
 @rpc("any_peer")
 func request_make_move(payload: Dictionary):
+	# Esse payload contém inicialmente (tipo: String, x:int, y: int, scored:bool)
 	var sender_id = get_tree().get_multiplayer().get_remote_sender_id()
 	
 	#Buscando sala

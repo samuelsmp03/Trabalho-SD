@@ -1,0 +1,72 @@
+[gd_scene load_steps=5 format=3 uid="uid://bus5jab1p8m3k"]
+
+[ext_resource type="Texture2D" uid="uid://cwp0q1f51q04k" path="res://assets/backgrounds/Paper Texture2.jpg" id="1_cguw2"]
+[ext_resource type="Script" uid="uid://h54fwufkwogp" path="res://scenes_scripts/lobby_salas.gd" id="2_1a4ag"]
+[ext_resource type="FontFile" uid="uid://dai5fj1ja8e0p" path="res://assets/fonts/Swansea/SwanseaItalic-AwqD.ttf" id="3_cvuic"]
+[ext_resource type="Texture2D" uid="uid://riwpjuhsarcn" path="res://assets/icons/back.jpg" id="4_xk3ur"]
+
+[node name="TextureRect" type="TextureRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_cguw2")
+expand_mode = 2
+script = ExtResource("2_1a4ag")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer"]
+modulate = Color(0, 0, 0, 1)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_fonts/font = ExtResource("3_cvuic")
+theme_override_font_sizes/font_size = 32
+text = "Código da Sala:"
+
+[node name="codeRoom" type="LineEdit" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 0
+max_length = 6
+
+[node name="okButton" type="Button" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "OK!"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="BackButton" type="Button" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 1
+icon = ExtResource("4_xk3ur")
+flat = true
+
+[connection signal="pressed" from="MarginContainer/HBoxContainer/okButton" to="." method="_on_ok_button_pressed"]
