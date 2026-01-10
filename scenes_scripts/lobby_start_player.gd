@@ -36,9 +36,9 @@ func _on_ok_pressed():
 	Global.my_color = selected_color
 	
 	if Global.flag == "criar":
-		get_tree().call_deferred("change_scene_to_file", "res://Scenes/WaitRoom.tscn")
+		get_tree().call_deferred("change_scene_to_file", "res://scenes/WaitRoom.tscn")
 	else:
-		get_tree().call_deferred("change_scene_to_file", "res://Scenes/LobbyRoom.tscn")
+		get_tree().call_deferred("change_scene_to_file", "res://scenes/LobbyRoom.tscn")
 
 
 func _shake_node(node):

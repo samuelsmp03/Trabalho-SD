@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bpbvt4s3t2w7b"]
+
+[node name="Erro" type="AcceptDialog"]
+oversampling_override = 1.0
+position = Vector2i(0, 36)
+visible = true

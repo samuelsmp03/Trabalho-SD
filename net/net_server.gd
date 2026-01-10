@@ -102,7 +102,7 @@ func request_create_room(payload: Dictionary):
 
 @rpc("any_peer")
 func request_join_room(payload:Dictionary):
-	print("[SERVIDOR] ENTREI EM JOIN ROOM - NAO ERA PRA ACONTECER")
+	print("[SERVIDOR]: Alguém quer entrar na sala: ", payload.player_name)
 	var sender_id = get_tree().get_multiplayer().get_remote_sender_id()
 	var r_id = payload.room_id
 	

@@ -1,5 +1,4 @@
 extends Node
-
 var my_id: int = 0             
 var my_name: String = ""      
 var my_color: Color = Color.WHITE

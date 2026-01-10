@@ -48,65 +48,35 @@ modulate = Color(0, 0, 0, 1)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_fonts/font = ExtResource("2_68fke")
-theme_override_font_sizes/font_size = 32
-text = "Mínimo de jogadores:"
-
-[node name="LabelMinCount" type="Label" parent="MarginContainer/VBoxContainer/MinBox"]
-modulate = Color(0, 0, 0, 1)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("3_68fke")
-theme_override_font_sizes/font_size = 32
-text = "2"
-
-[node name="MinPlus" type="Button" parent="MarginContainer/VBoxContainer/MinBox"]
-custom_minimum_size = Vector2(60, 20)
-layout_mode = 2
-theme_override_font_sizes/font_size = 50
-text = "+"
-
-[node name="MinMinus" type="Button" parent="MarginContainer/VBoxContainer/MinBox"]
-custom_minimum_size = Vector2(60, 20)
-layout_mode = 2
-theme_override_font_sizes/font_size = 50
-text = "-"
+theme_override_font_sizes/font_size = 16
+text = "Escolha um número de jogadores entre 2 e 5.
+Escolha um tamanho de tabuleiro entre 5 e 10."
 
 [node name="MaxBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
 
-[node name="LabelMaxJog" type="Label" parent="MarginContainer/VBoxContainer/MaxBox"]
+[node name="NumPlayer" type="Label" parent="MarginContainer/VBoxContainer/MaxBox"]
 modulate = Color(0, 0, 0, 1)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_fonts/font = ExtResource("2_68fke")
 theme_override_font_sizes/font_size = 32
-text = "Máximo de jogadores:"
+text = "Número de Jogadores: "
 
-[node name="LabelMaxCount" type="Label" parent="MarginContainer/VBoxContainer/MaxBox"]
+[node name="NumPlayerInput" type="LineEdit" parent="MarginContainer/VBoxContainer/MaxBox"]
 modulate = Color(0, 0, 0, 1)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_68fke")
-theme_override_font_sizes/font_size = 32
-text = "2"
-
-[node name="MaxPlus" type="Button" parent="MarginContainer/VBoxContainer/MaxBox"]
-custom_minimum_size = Vector2(60, 20)
-layout_mode = 2
-theme_override_font_sizes/font_size = 50
-text = "+"
-
-[node name="MaxMinus" type="Button" parent="MarginContainer/VBoxContainer/MaxBox"]
-custom_minimum_size = Vector2(60, 20)
-layout_mode = 2
-theme_override_font_sizes/font_size = 50
-text = "-"
+theme_override_font_sizes/font_size = 29
+alignment = 1
 
 [node name="GridBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="LabelSizeGrid" type="Label" parent="MarginContainer/VBoxContainer/GridBox"]
+[node name="BoardSize" type="Label" parent="MarginContainer/VBoxContainer/GridBox"]
 modulate = Color(0, 0, 0, 1)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -114,38 +84,11 @@ theme_override_fonts/font = ExtResource("2_68fke")
 theme_override_font_sizes/font_size = 32
 text = "Tamanho tabuleiro:"
 
-[node name="LabelCountGrid1" type="Label" parent="MarginContainer/VBoxContainer/GridBox"]
+[node name="BoardSizeInput" type="LineEdit" parent="MarginContainer/VBoxContainer/GridBox"]
 modulate = Color(0, 0, 0, 1)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_68fke")
 theme_override_font_sizes/font_size = 32
-text = "5"
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/GridBox"]
-modulate = Color(0, 0, 0, 1)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("3_68fke")
-theme_override_font_sizes/font_size = 32
-text = "x"
-
-[node name="LabelCountGrid2" type="Label" parent="MarginContainer/VBoxContainer/GridBox"]
-modulate = Color(0, 0, 0, 1)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("3_68fke")
-theme_override_font_sizes/font_size = 32
-text = "5"
-
-[node name="GridPlus" type="Button" parent="MarginContainer/VBoxContainer/GridBox"]
-custom_minimum_size = Vector2(60, 20)
-layout_mode = 2
-theme_override_font_sizes/font_size = 50
-text = "+"
-
-[node name="GridMinus" type="Button" parent="MarginContainer/VBoxContainer/GridBox"]
-custom_minimum_size = Vector2(60, 20)
-layout_mode = 2
-theme_override_font_sizes/font_size = 50
-text = "-"
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -164,6 +107,8 @@ size_flags_vertical = 0
 theme_override_font_sizes/font_size = 1
 icon = ExtResource("4_grbyu")
 flat = true
+
+[node name="AcceptDialog" type="AcceptDialog" parent="."]
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/MarginContainer/okButton" to="." method="_on_ok_button_pressed"]
 [connection signal="pressed" from="MarginContainer/BackButton" to="." method="_on_back_button_pressed"]

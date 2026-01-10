@@ -8,6 +8,7 @@ const NetClientScript = preload("res://net/net_client.gd")
 
 func _ready():
 	if "--server" in OS.get_cmdline_args():
+		print("INICIEI O SERVIDOR")
 		_start_as_server()
 	else:
 		_start_as_client()
@@ -17,7 +18,7 @@ func _start_as_server():
 	
 	server_node = NetServerScript.new()
 	
-	server_node.name = "NetClient" 
+	server_node.name = "NetClient"  #alterar nome
 	
 	get_tree().root.call_deferred("add_child", server_node)
 	
