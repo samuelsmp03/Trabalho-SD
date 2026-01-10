@@ -17,7 +17,6 @@ func _on_botao_servidor_pressed():
 	server_node.name = "ServidorRede"
 	add_child(server_node)
 
-	# Novo nome (com underscore)
 	if server_node.has_method("_setup_server"):
 		server_node._setup_server(8080)
 	else:
@@ -37,7 +36,6 @@ func _on_botao_cliente_pressed():
 	client_node.name = "ClienteRede"
 	add_child(client_node)
 
-	# Conecta o sinal antes de conectar no servidor
 	if client_node.has_signal("room_list_updated"):
 		client_node.room_list_updated.connect(func(salas):
 			print("--- CONFIRMAÇÃO DE DADOS ---")

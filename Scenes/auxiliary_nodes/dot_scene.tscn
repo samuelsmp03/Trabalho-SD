@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://yc6ckoq3l0hg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_61jim"]
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+
+[node name="ColorRect" type="Panel"]
+custom_minimum_size = Vector2(12, 12)
+offset_right = 40.0
+offset_bottom = 40.0
+pivot_offset = Vector2(6, 6)
+theme_override_styles/panel = SubResource("StyleBoxFlat_61jim")

@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://daqki1jb8wr0s"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kbavb"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jtf3j"]
+bg_color = Color(0.6, 1, 0.6, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bcokb"]
+
+[node name="Button" type="Button"]
+custom_minimum_size = Vector2(80, 10)
+offset_right = 8.0
+offset_bottom = 8.0
+pivot_offset = Vector2(40, 5)
+theme_override_styles/normal = SubResource("StyleBoxFlat_kbavb")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_jtf3j")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_bcokb")

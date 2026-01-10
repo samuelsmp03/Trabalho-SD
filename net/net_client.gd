@@ -20,19 +20,20 @@ func _connect_to_server(ip: String, port: int):
 	print("Tentando conectar em: ", ip, ":", port)
 
 
-func _create_room(r_id, p_name, p_color: Color, n_players, b_size):
-	#Preenchi para teste do servidor
-	print("[CLIENTE]- EXECUTEI  CREATE_ROOM")
-	var payload = Messages.create_room_config_payload(r_id, p_name, p_color, n_players, b_size)
+func _create_room(r_id: String, n_players: int, b_size: int):
+	var payload = Messages.create_room_config_payload(r_id, Global.my_name, Global.my_color, n_players, b_size)
 	rpc_id(1, Messages.REQUEST_CREATE_ROOM, payload)
 
 func _get_rooms():
 	rpc_id(1, Messages.REQUEST_ROOM_LIST)  #Isso aqui não funciona ainda
 
-func _join_room(r_id, p_name, p_color:Color):
-	#TODO: OK! Criar a mansagem e manda pro servidor -> create_join_game_payload
-	var payload = Messages.create_join_game_payload(r_id,p_name,p_color)
+func _join_room(r_id: String):
+	print("[CLIENTE] Pedindo para entrar na sala: ", r_id)
+	
+	var payload = Messages.create_join_game_payload(r_id, Global.my_name, Global.my_color)
+	
 	rpc_id(1,Messages.REQUEST_JOIN_ROOM,payload)
+	print("[CLIENTE] Tentando entrar na sala ", r_id, " como ", Global.my_name)
 	
 	
 func _make_move(tipo: String, x:int, y: int, scored:bool):
@@ -56,16 +57,29 @@ func _send_game_over(_payload: Dictionary):
 @rpc("any_peer")
 func start_game(): pass
 
+
 @rpc("any_peer")
-func receive_room_update(_room_data: Dictionary): 
-	#TODO: Aqui tem que chamar uma outra função pra atualizar a UI
+func request_join_room(_payload: Dictionary):
+	# Fica vazia no cliente, pois quem executa é o servidor
 	pass
 
+@rpc("any_peer")
+func request_create_room(_payload: Dictionary):
+	pass
 
+@rpc("any_peer")
+func request_make_move(_payload: Dictionary):
+	pass
+
+@rpc("any_peer")
+func receive_room_update(_room_data: Dictionary): 
+	Global.room_id = _room_data.id
+	
+	if get_tree().current_scene.name == "LobbyRooms":
+		get_tree().change_scene_to_file("res://scenes/WaitRoom.tscn")
 
 @rpc("any_peer")
 func broadcast_move(move_data: Dictionary):
-	#Recebe a jogada do broadcast e aplica a jogada 
 	_apply_move(move_data)
 
 @rpc("any_peer")
@@ -79,12 +93,16 @@ func receive_room_list(list_of_rooms: Array):
 
 @rpc("any_peer") func request_room_list(): pass
 
+@rpc("any_peer") func request_game_over(_p: Dictionary): pass
+
 
 #Todo: reconexão -> receive e request
 
 #SINAIS INTERNOS
 func _on_connected():
 	print("Conectado com sucesso ao servidor!")
+	Global.my_id = multiplayer.get_unique_id()
+	print("O meu ID de rede é: ", Global.my_id)
 	_get_rooms()  #pede a lista de salas assim que se conecta
 
 func _on_failed():

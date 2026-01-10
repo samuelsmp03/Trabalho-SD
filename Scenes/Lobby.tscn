@@ -47,3 +47,4 @@ layout_mode = 2
 text = "Entrar em Sala"
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/CriarSala" to="." method="_on_criar_sala_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/EntrarSala" to="." method="_on_entrar_sala_pressed"]

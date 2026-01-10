@@ -45,7 +45,6 @@ text = "Código da Sala:"
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 0
-max_length = 6
 
 [node name="okButton" type="Button" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2

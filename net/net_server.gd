@@ -24,7 +24,7 @@ func _setup_server (port: int):
 	get_tree().get_multiplayer().peer_connected.connect(_on_peer_connected)
 	get_tree().get_multiplayer().peer_disconnected.connect(_on_peer_disconnected)
 	
-	print("SERVIDOR OINLINE: Escutando na porta ", port)
+	print("SERVIDOR ONLINE: Escutando na porta ", port)
 	return OK
 	
 	
@@ -274,8 +274,19 @@ func _begin_game(room_id: String):
 
 
 #RPC do cliente
+
 @rpc("any_peer") func request_game_over(_data: Dictionary):	 
 	_handle_game_over(_data)
 	pass
+
+@rpc("any_peer") func receive_room_list(_l: Array): pass
+
+@rpc("any_peer") func receive_room_update(_d: Dictionary): pass
+
+@rpc("any_peer") func start_game(): pass
+
+@rpc("any_peer") func broadcast_move(_d: Dictionary): pass
+
+@rpc("any_peer") func broadcast_game_over(_p: Dictionary): pass
 
 #Todo: Reconexão: receive e request

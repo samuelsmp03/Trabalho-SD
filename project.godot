@@ -11,9 +11,14 @@ config_version=5
 [application]
 
 config/name="PontoAPonto"
-run/main_scene="uid://sh4radtsms63"
+run/main_scene="uid://bdd5p10qn2j6i"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Global="*res://core/global_data.gd"
+NetClient="*res://net/net_client.gd"
 
 [display]
 

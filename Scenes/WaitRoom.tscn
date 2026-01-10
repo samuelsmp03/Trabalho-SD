@@ -1,0 +1,60 @@
+[gd_scene load_steps=4 format=3 uid="uid://e5141p6hjrut"]
+
+[ext_resource type="Texture2D" uid="uid://cfcm6ig1w6fmr" path="res://assets/backgrounds/Paper Texture8.jpg" id="1_28qnc"]
+[ext_resource type="Script" uid="uid://d0o1virvlglgb" path="res://scenes_scripts/wait_room.gd" id="2_l5epu"]
+[ext_resource type="FontFile" uid="uid://drvgs5npqqg64" path="res://assets/fonts/Swansea/Swansea-q3pd.ttf" id="3_tjcxv"]
+
+[node name="TextRect" type="TextureRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_28qnc")
+expand_mode = 2
+script = ExtResource("2_l5epu")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_top = 25
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+modulate = Color(0, 0, 0, 1)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_tjcxv")
+theme_override_font_sizes/font_size = 32
+text = "Lista de jogadores:"
+
+[node name="codSala" type="Label" parent="MarginContainer/VBoxContainer"]
+modulate = Color(0, 0, 0, 1)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_tjcxv")
+theme_override_font_sizes/font_size = 28
+text = "Código da Sala:"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+text = "Criar Convite"
+
+[node name="Button2" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+text = "Iniciar Jogo"
