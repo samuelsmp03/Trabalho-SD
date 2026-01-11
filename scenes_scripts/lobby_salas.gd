@@ -13,4 +13,4 @@ func _on_ok_button_pressed():
 		print("Erro crítico: Dados do jogador não encontrados no Global.")
 		return
 		
-	NetClient._join_room(room_code)
+	NetworkManager.join_room(room_code)

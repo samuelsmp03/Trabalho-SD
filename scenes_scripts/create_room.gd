@@ -17,11 +17,19 @@ func _on_ok_button_pressed() -> void:
 		$AcceptDialog.popup_centered()
 		return 
 	
-	var room_id = str(randi() % 10)
-	
-	if NetClient:
-		NetClient._create_room(room_id, num_players, b_size)
-		get_tree().change_scene_to_file("res://scenes/LobbyStartPlayer.tscn")
+	var room_id = str(Global.my_id) #tá usando o Global.my_id como id da sala
+	var room_data = {
+		"room_id": room_id,
+		"num_players": num_players,
+		"b_size": b_size}
+		
+	if NetworkManager:
+		#NetworkManager.create_room(room_id, num_players, b_size)
+		var next_scene = load("res://scenes/LobbyStartPlayer.tscn").instantiate()
+		next_scene.room_data = room_data
+		#get_tree().change_scene_to_file(next_scene)
+		get_tree().current_scene.queue_free()
+		get_tree().root.add_child(next_scene)
 	else:
 		$AcceptDialog.dialog_text = "Erro crítico: Gerenciador de rede não encontrado."
 		$AcceptDialog.popup_centered()

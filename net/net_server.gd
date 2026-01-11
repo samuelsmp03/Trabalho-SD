@@ -19,14 +19,13 @@ func _setup_server (port: int):
 		print("ERRO: Não foi possível iniciar o servidor na porta ", port)
 		return error
 	#essa instancia de peer vira o servidor	
-	get_tree().get_multiplayer().multiplayer_peer = peer
-	
-	get_tree().get_multiplayer().peer_connected.connect(_on_peer_connected)
-	get_tree().get_multiplayer().peer_disconnected.connect(_on_peer_disconnected)
-	
+	multiplayer.multiplayer_peer = peer
+	multiplayer.peer_connected.connect(_on_peer_connected)
+	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+	 
 	print("SERVIDOR ONLINE: Escutando na porta ", port)
+	print("[SERVIDOR] Meu node path: ", get_path())
 	return OK
-	
 	
 # ---- Sinais de Conexão e Desconexão ---- 
 func _on_peer_connected(id: int):
@@ -61,13 +60,21 @@ func _on_peer_disconnected(id:int):
 # Isso é enviado assim pelo cliente para o servidor: rpc_id(1, "create_room", meu_payload)
 # Esse 1 é o id do servidor
 
-@rpc("any_peer")
+@rpc("any_peer", "call_remote","reliable")
 func request_create_room(payload: Dictionary):
-	print("[SERVIDOR] - 2 - ENTREI EM REQUEST_CREATE_ROOM")
-	var sender_id = get_tree().get_multiplayer().get_remote_sender_id()
-	print("[DEGUB SERVIDOR] - Payload recebido: ", payload)
-	
-	var r_id = payload.get("room_id","ERRO_SEM_NOME")
+	print("[SERVIDOR] PEDIDO DE CRIAÇÃO DE SALA RECEBIDO. PAYLOAD: ", payload)
+	var sender_id := multiplayer.get_remote_sender_id()
+
+	var r_id := str(payload.get("room_id", "ERRO_SEM_NOME"))
+	var target_player_count := int(payload.get("num_players", 0))
+	var board_dimension := int(payload.get("board_size", 0))
+	var player_name := str(payload.get("player_name", ""))
+	var player_color := str(payload.get("player_color", "#FFFFFF"))
+
+	if r_id == "ERRO_SEM_NOME" or target_player_count <= 0 or board_dimension <= 0:
+		print("[SERVIDOR] Payload inválido, abortando criação.")
+		return
+
 	
 	if rooms.has(r_id):
 		print("Erro: Sala já existe.")
@@ -77,35 +84,36 @@ func request_create_room(payload: Dictionary):
 	var new_room = RoomState.RoomState.new(
 		r_id,
 		sender_id,
-		payload.num_players,
-		payload.board_size)
+		target_player_count,
+		board_dimension)
+	
+	
 	rooms[r_id] = new_room
 	peer_to_room[sender_id] = r_id
-	
-	#Atualizando o PlayerState que já existia desde a conexão
-	
-	_update_player_session(sender_id, payload.player_name, payload.player_color, r_id)
 
-	print("Sala ", r_id, " criada por ", payload.player_name)
+	_update_player_session(sender_id, player_name, player_color, r_id)
+
+	print("Sala ", r_id, " criada por ", player_name)
+
+	if not rooms.has(r_id):
+		print("[ERRO] rooms perdeu a sala logo após criar. r_id:", r_id)
+		return
+	print("[DEBUG] create_room inst:", get_instance_id(), "rooms keys:", rooms.keys())
+
 	_send_room_info_update(r_id)
+
 #----------------------------------------------------------------	
-	
-# Funcção JOIN_ROOM chamada pelo Cliente que desejar entrar na sala
-# PAyload dessa função contem apenas o id da sala, nome do jogador e cor do jogador
-# Isso pq ele está apenas entrando num jogo e não criando
-# Exemplo: 
-#var payload_entrada = {
-#    "room_id": "SALA123",
-#    "player_name": "Marcos",
-#    "player_color": "#0000FF" # Azul}
-# Enviaria assim: rpc_id(1, "join_room" payload_entrada
 
 @rpc("any_peer")
 func request_join_room(payload:Dictionary):
-	print("[SERVIDOR]: Alguém quer entrar na sala: ", payload.player_name)
-	var sender_id = get_tree().get_multiplayer().get_remote_sender_id()
-	var r_id = payload.room_id
 	
+	var sender_id := multiplayer.get_remote_sender_id()
+	var r_id := str(payload.get("room_id", ""))
+	var player_name := str(payload.get("player_name", ""))
+	var player_color := str(payload.get("player_color", "#FFFFFF"))
+
+	print("[SERVIDOR]: Alguém quer entrar na sala: ", player_name)
+		
 	if not rooms.has(r_id):
 		print("Erro: Sala ", r_id, " não encontrada.")
 		#Depois temos que adicionar aqui um RPC de erro para o cliente
@@ -126,18 +134,14 @@ func request_join_room(payload:Dictionary):
 	peer_to_room[sender_id] = r_id
 	
 	#Atualizando playerState desse jogador
-	_update_player_session(sender_id, payload.player_name, payload.player_color, r_id)
-	print("Jogador ", payload.player_name, " entrou na sala ", r_id)
+	_update_player_session(sender_id, player_name, player_color, r_id)
+	print("Jogador ", player_name, " entrou na sala ", r_id)
+
 	
 	_send_room_info_update(r_id) #atualiza o lobby quando um novo jogador entrar
 	#Verificação de Início de Jogo
 	if room.players.size() == room.target_player_count:
 		_begin_game(r_id)
-		
-		
-		
-		
-		
 		
 		
 		
@@ -168,7 +172,7 @@ func request_make_move(payload: Dictionary):
 		rpc_id(p_id, Messages.BROADCAST_MOVE, sync_data)
 	
 	# Depois de enviar a jogada para todos, decide se passa o turno ou se apenas atualiza
-	if not payload.scored:
+	if not bool(payload.get("scored", false)):
 		_next_turn(r_id)  #passa turno 
 	else:
 		_send_room_info_update(r_id)  #envia atualização da sala para todos. Inclusive a informação mas de quem está com o token
@@ -224,6 +228,8 @@ func _update_player_session(p_id: int, p_name:String, p_color:String, r_id: Stri
 	peer_to_room[p_id] = r_id
 
 func _send_room_info_update(r_id: String):
+	print("[DEBUG] send_update inst:", get_instance_id(), " r_id:", r_id, " keys:", rooms.keys())
+
 	if not rooms.has(r_id):
 		print("[ERRO]: Tentativa de atualizar sala inexistente: ", r_id) 
 		return

@@ -17,8 +17,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Global="*res://core/global_data.gd"
-NetClient="*res://net/net_client.gd"
+Global="*res://autoload/global_data.gd"
+NetworkManager="*res://net/network_manager.gd"
 
 [display]
 

@@ -59,7 +59,7 @@ class RoomState:
 	func to_dict() -> Dictionary:
 		return {
 			"id": id,
-			"peer_ids_in_room": players,
+			"players": players,
 			"host": host,
 			"token_owner": token_owner,
 			"status": GameConfig.RoomStatus.keys()[status],
