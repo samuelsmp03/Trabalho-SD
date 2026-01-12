@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://bqohmhwq1onxo" path="res://assets/backgrounds/Paper Texture7.jpg" id="1_smhdi"]
 [ext_resource type="FontFile" uid="uid://crhc1n00dhr4g" path="res://assets/fonts/Swansea/SwanseaBoldItalic-p3Dv.ttf" id="2_68fke"]
-[ext_resource type="Script" uid="uid://eurq0oljkwm0" path="res://scenes_scripts/create_room.gd" id="2_o6ooa"]
+[ext_resource type="Script" uid="uid://eurq0oljkwm0" path="res://scenes_scripts/room_config.gd" id="2_o6ooa"]
 [ext_resource type="FontFile" uid="uid://dai5fj1ja8e0p" path="res://assets/fonts/Swansea/SwanseaItalic-AwqD.ttf" id="3_68fke"]
 [ext_resource type="Texture2D" uid="uid://riwpjuhsarcn" path="res://assets/icons/back.jpg" id="4_grbyu"]
 

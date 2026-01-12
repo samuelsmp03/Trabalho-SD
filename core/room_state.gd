@@ -42,9 +42,9 @@ class RoomState:
 	var status: int
 	
 	var target_player_count: int
-	var board_dimension: int
+	var board_size: int
 	
-	func _init(room_id: String, host_id: int, p_target_player_count: int, p_board_dim: int):
+	func _init(room_id: String, host_id: int, p_target_player_count: int, p_board_size: int):
 		id = room_id
 		players = [host_id]
 		host = host_id
@@ -53,37 +53,18 @@ class RoomState:
 		
 		# Configurações da sala
 		target_player_count = p_target_player_count
-		board_dimension = p_board_dim 
+		board_size = p_board_size 
 		
 	# converte o objeto RoomState para um dicionário 
 	func to_dict() -> Dictionary:
 		return {
-			"id": id,
+			"room_id": id,
 			"players": players,
 			"host": host,
 			"token_owner": token_owner,
-			"status": GameConfig.RoomStatus.keys()[status],
+			"status": status,
 			"target_player_count": target_player_count,
-			"board_dimension": board_dimension
+			"board_size": board_size
 		}
 		
 		
-# IDEIA DA ESTRUTURA GLOBAL DE GERENCIAMENTO (Para implementar no net_server.gd)
-# é o Formato de como o Servidor deverá organizar os dados.
-
-# players: Dictionary<int, PlayerState>
-#   players = {
-#       2: PlayerState(peer_id=2, ...), 
-#       3: PlayerState(peer_id=3, ...)
-#   }
-#
-# rooms: Dictionary<String, RoomState>
-#   rooms = {
-#       "ABCDE": RoomState(id="ABCDE", host=2, ...)
-#   }
-#
-# peer_to_room: Dictionary<int, String> ( Seria um mapa rápido para encontrar a sala de um peer)
-#   peer_to_room = {
-#       2: "ABCDE",
-#       3: "ABCDE"
-#   }

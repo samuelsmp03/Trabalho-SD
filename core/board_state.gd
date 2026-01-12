@@ -53,6 +53,7 @@ func _create_game():
 		
 # Função para validar se o movimento é possível
 func is_move_legal(tipo: String, x: int, y: int) -> bool:
+	tipo = tipo.to_lower()
 	if tipo == "h":
 		return h_lines[x][y] == 0
 	return v_lines[x][y] == 0

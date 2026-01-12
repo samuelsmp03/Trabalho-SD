@@ -1,9 +1,9 @@
 [gd_scene load_steps=23 format=3 uid="uid://bmyhjxn1knk72"]
 
-[ext_resource type="Texture2D" uid="uid://beewghgf04veh" path="res://assets/backgrounds/Paper Texture4.jpg" id="1_fq7w6"]
-[ext_resource type="FontFile" uid="uid://crhc1n00dhr4g" path="res://assets/fonts/Swansea/SwanseaBoldItalic-p3Dv.ttf" id="2_n0kmb"]
-[ext_resource type="Script" uid="uid://gpwywupf233a" path="res://scenes_scripts/lobby_start_player.gd" id="2_syqes"]
-[ext_resource type="StyleBox" uid="uid://dfvnu7xvkhll3" path="res://scenes/styles/LobbyStartPlayer.tres" id="3_n0kmb"]
+[ext_resource type="Texture2D" uid="uid://beewghgf04veh" path="res://assets/backgrounds/Paper Texture4.jpg" id="1_sl38j"]
+[ext_resource type="Script" uid="uid://gpwywupf233a" path="res://scenes_scripts/player_profile.gd" id="2_8xpk2"]
+[ext_resource type="FontFile" uid="uid://crhc1n00dhr4g" path="res://assets/fonts/Swansea/SwanseaBoldItalic-p3Dv.ttf" id="3_xpmhs"]
+[ext_resource type="StyleBox" uid="uid://dfvnu7xvkhll3" path="res://scenes/styles/LobbyStartPlayer.tres" id="4_d5fp6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n0kmb"]
 border_width_left = 5
@@ -129,9 +129,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("1_fq7w6")
+texture = ExtResource("1_sl38j")
 expand_mode = 2
-script = ExtResource("2_syqes")
+script = ExtResource("2_8xpk2")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -155,7 +155,7 @@ size_flags_vertical = 0
 modulate = Color(0, 0, 0, 1)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_fonts/font = ExtResource("2_n0kmb")
+theme_override_fonts/font = ExtResource("3_xpmhs")
 theme_override_font_sizes/font_size = 32
 text = "Nome:"
 
@@ -175,7 +175,7 @@ columns = 3
 modulate = Color(0.9843137, 0.3372549, 0.46666667, 1)
 custom_minimum_size = Vector2(70, 70)
 layout_mode = 2
-theme_override_styles/normal = ExtResource("3_n0kmb")
+theme_override_styles/normal = ExtResource("4_d5fp6")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_n0kmb")
 theme_override_styles/hover = SubResource("StyleBoxFlat_n0kmb")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_n0kmb")

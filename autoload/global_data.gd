@@ -25,10 +25,24 @@ var min_players: int = GameConfig.MIN_PLAYERS
 var current_turn_player_id: int = -1
 var room_status: int = GameConfig.RoomStatus.WAITING  
 
+# ---- CONFIGURAÇÕES PARA AÇÃO DE ENTRAR OU CRIAR EM SALA ----
+var pending_action: String = ""  # "create" ou "join"
+var pending_room_id: String = ""
+var pending_num_players: int = 0
+var pending_board_size: int = 0
+
+
 
 var pending_room_data: Dictionary = {}
 
 # ----- FUNÇÕES ÚTEIS -----
+func clear_pending():
+	pending_action = ""
+	pending_room_id = ""
+	pending_num_players = 0
+	pending_board_size = 0
+	
+	
 func is_valid_board_size(size: int) -> bool:
 	return size >= GameConfig.MIN_BOARD_SIZE and size <= GameConfig.MAX_BOARD_SIZE
 

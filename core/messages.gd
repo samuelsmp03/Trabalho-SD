@@ -3,7 +3,7 @@ extends RefCounted
 # Este arquivo define o protocolo de comunicação
 # Estamos usando mensagens para cada tipo de comando/evento
 
-# ----- LOBBY/GERENCIAMENTO -----
+# ----- GERENCIAMENTO -----
 
 const REQUEST_CREATE_ROOM = "request_create_room"
 const REQUEST_JOIN_ROOM = "request_join_room"

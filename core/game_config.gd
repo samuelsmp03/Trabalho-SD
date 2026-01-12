@@ -24,4 +24,4 @@ const MAX_BOARD_SIZE = 10
 
 # Tempo Limite
 const MAX_TURB_TIME = 10 #Tempo máximo para jogar (Segundos)
-const MAX_LOBBY_WAIT = 60 #tempo máximo de espera no lobby
+const MAX_WAIT_ROOM = 60 #tempo máximo de espera na sala de espera

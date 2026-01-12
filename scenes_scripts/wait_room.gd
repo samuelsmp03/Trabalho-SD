@@ -1,5 +1,40 @@
 extends TextureRect
+@onready var room_label = $MarginContainer/VBoxContainer/roomLabel
+@onready var room_ocupancy_label = $MarginContainer/VBoxContainer/statusLabel
+@onready var players_list = $MarginContainer/VBoxContainer/playersList
+@onready var network_manager = get_node("/root/NetworkManager")
 
-@onready var room_code_label = $MarginContainer/VBoxContainer/codSala
 func _ready():
-	room_code_label.text = "Código da sua sala: %s" % Global.my_id
+	room_ocupancy_label.text = "Aguardando jogadores..."
+	room_label.text = "Sala: " + str(Global.room_id if Global.room_id != "" else "--")
+
+
+	network_manager.room_updated.connect(_on_room_update)
+	network_manager.game_started.connect(_on_start_game)
+	
+	if network_manager.last_room_data.size() > 0: #aplica o úmtimo estado se chegou antes, mais rápido dessa função waitroom._ready conectar o sinal
+		_on_room_update(network_manager.last_room_data)
+	else:
+		room_ocupancy_label.text = "Aguardando jogadores..."
+		room_label.text = "Sala: " + str(Global.room_id if Global.room_id != "" else "--")
+
+
+func _on_room_update(room_data: Dictionary):
+	room_label.text = "Sala: " + room_data.get("room_id", "--")
+
+	room_ocupancy_label.text = "Jogadores: %d / %d" % [
+		room_data.get("players", []).size(),
+		room_data.get("target_player_count", 0)
+	]
+
+	# Limpa lista
+	for child in players_list.get_children():
+		child.queue_free()
+
+	for player in room_data.get("players_details", []):
+		var lbl = Label.new()
+		lbl.text = player.get("name", "???")
+		players_list.add_child(lbl)
+		
+func _on_start_game():
+	room_ocupancy_label.text = "Jogo iniciando..."
