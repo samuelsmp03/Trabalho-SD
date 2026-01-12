@@ -32,8 +32,7 @@ var pending_num_players: int = 0
 var pending_board_size: int = 0
 
 
-
-var pending_room_data: Dictionary = {}
+var pending_room_data: Dictionary = {} #ainda não tá sendo usado
 
 # ----- FUNÇÕES ÚTEIS -----
 func clear_pending():

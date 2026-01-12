@@ -40,7 +40,6 @@ class RoomState:
 	var host: int
 	var token_owner: int
 	var status: int
-	
 	var target_player_count: int
 	var board_size: int
 	

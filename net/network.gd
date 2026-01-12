@@ -69,7 +69,8 @@ func _on_failed():
 	push_error("[CLIENTE] Falha ao conectar")
 
 
-# --- API UI ---
+
+# --- API para o Client Logic ---
 func create_room(r_id: String, n_players: int, b_size: int):
 	if not _ensure_connected():
 		print("[CLIENTE] ainda não conectado (create_room)")

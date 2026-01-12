@@ -16,7 +16,7 @@ func _on_ok_button_pressed():
 		return
 		
 
-	NetworkManager.join_room(room_code)
+	NetworkManager.join_room(room_code)  #TODO: chamar o client_logic em vez de network manager direto
 	get_tree().call_deferred("change_scene_to_file", "res://scenes/WaitRoom.tscn")
 
 	

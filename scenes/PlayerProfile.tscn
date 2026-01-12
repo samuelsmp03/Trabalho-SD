@@ -1,9 +1,10 @@
-[gd_scene load_steps=23 format=3 uid="uid://bmyhjxn1knk72"]
+[gd_scene load_steps=24 format=3 uid="uid://bmyhjxn1knk72"]
 
 [ext_resource type="Texture2D" uid="uid://beewghgf04veh" path="res://assets/backgrounds/Paper Texture4.jpg" id="1_sl38j"]
 [ext_resource type="Script" uid="uid://gpwywupf233a" path="res://scenes_scripts/player_profile.gd" id="2_8xpk2"]
 [ext_resource type="FontFile" uid="uid://crhc1n00dhr4g" path="res://assets/fonts/Swansea/SwanseaBoldItalic-p3Dv.ttf" id="3_xpmhs"]
 [ext_resource type="StyleBox" uid="uid://dfvnu7xvkhll3" path="res://scenes/styles/LobbyStartPlayer.tres" id="4_d5fp6"]
+[ext_resource type="Script" uid="uid://b6b82m7s3euqm" path="res://net/client_logic.gd" id="5_8xpk2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n0kmb"]
 border_width_left = 5
@@ -248,3 +249,6 @@ layout_mode = 2
 size_flags_horizontal = 8
 theme_override_font_sizes/font_size = 32
 text = "OK!"
+
+[node name="ClientLogic" type="Node" parent="."]
+script = ExtResource("5_8xpk2")

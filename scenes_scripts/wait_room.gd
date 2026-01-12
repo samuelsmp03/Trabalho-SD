@@ -9,7 +9,7 @@ func _ready():
 	room_label.text = "Sala: " + str(Global.room_id if Global.room_id != "" else "--")
 
 
-	network_manager.room_updated.connect(_on_room_update)
+	network_manager.room_updated.connect(_on_room_update)  #TODO: alterar aqui para tentar nao chamar network manager direto
 	network_manager.game_started.connect(_on_start_game)
 	
 	if network_manager.last_room_data.size() > 0: #aplica o úmtimo estado se chegou antes, mais rápido dessa função waitroom._ready conectar o sinal

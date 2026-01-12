@@ -29,6 +29,7 @@ func _on_player_attempt_move(type: String, x: int, y: int) -> void:
 		rpc_id(1, "request_move", type, x, y)
 
 
+
 @rpc("any_peer", "call_remote", "reliable")
 func request_move(type: String, x: int, y: int) -> void:
 	if multiplayer.is_server():
