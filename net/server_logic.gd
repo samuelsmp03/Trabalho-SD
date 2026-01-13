@@ -180,8 +180,16 @@ func handle_room_list(sender_id: int) -> void:
 			"room_id": r_id,
 			"player_count": room.players.size(),
 			"max_players": room.target_player_count,
-			"status": room.status
-		}
+			"status": room.status,
+			"host_id": room.host,			  #host_id
+			"host_name": ""
+ 		}
+		
+		#Busca o nome do host no dicionário de jogadores. "host" é o host_id 
+		if players.has(room.host):    #se ele tem ID do host
+			var host_state = players[room.host] 
+			info["host_name"] = host_state.name 
+		
 		list_of_rooms.append(info)
 
 	get_parent().send_room_list_to(sender_id, list_of_rooms)

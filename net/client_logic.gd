@@ -4,7 +4,10 @@ extends Node
 # É responsável por manter o estado local do cliente a partir dos eventos de rede.
 # Não executa RPC diretamente. Escuta sinais do NetworkManager e repassa para a UI e vice versa.
 
-signal room_state_changed(room_data: Dictionary)
+#signal room_state_changed(room_data: Dictionary)
+
+signal send_room_list_updated_to_UI (list_of_rooms: Array) 
+signal send_room_state_changed_to_UI(room_data: Dictionary)
 signal move_received(move_data: Dictionary)
 signal game_started
 signal game_over(payload: Dictionary)
@@ -26,9 +29,6 @@ func _ready():
 		return
 
 # Conecta os sinais emitidos pelo NetworkManager (nossa camada RPC)
-	#if network.has_signal("room_list_updated"):
-		#network.room_updated.connect(_on_room_updated)
-		#pass
 		
 	if network.has_signal("room_updated"):
 		network.room_updated.connect(_on_room_updated)
@@ -41,6 +41,9 @@ func _ready():
 
 	if network.has_signal("game_over"):
 		network.game_over.connect(_on_game_over)
+		
+	if network.has_signal("room_list_updated"):
+		network.room_list_updated.connect(_on_room_list_updated)
 
 
 # -------------------------
@@ -74,7 +77,7 @@ func _on_room_updated(new_room_data: Dictionary) -> void:
 	players_details = room_data.get("players_details", [])
 	global.room_players = _players_list_to_dict(players_details)
 
-	room_state_changed.emit(room_data)
+	send_room_state_changed_to_UI.emit(room_data)
 
 
 func _on_game_started() -> void:
@@ -89,6 +92,10 @@ func _on_game_over(payload: Dictionary) -> void:
 	global.room_status = global.GameConfig.RoomStatus.FINISHED
 	game_over.emit(payload)
 	
+func _on_room_list_updated(list_of_rooms:Array) -> void:
+	#Envia a lista atualizada de salas para a UI, precisa disso para a cena JoinRoomByCode, para aparecer as salas lá
+	send_room_list_updated_to_UI.emit(list_of_rooms)
+
 # -------------------------
 # Funções que encaminham para a camada de rede
 # (pra não ter que chamar NetworkManager diretamente)

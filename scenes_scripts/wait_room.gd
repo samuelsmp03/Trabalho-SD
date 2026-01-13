@@ -12,7 +12,7 @@ func _ready():
 
 	#network_manager.room_updated.connect(_on_room_update)  #TODO: alterar aqui para tentar nao chamar network manager direto
 	#network_manager.game_started.connect(_on_start_game)
-	ClientLogic.room_state_changed.connect(_on_room_update)
+	ClientLogic.send_room_state_changed_to_UI.connect(_on_room_update)
 	ClientLogic.game_started.connect(_on_start_game)
 	
 	if ClientLogic.room_data.size() > 0: #aplica o úmtimo estado se chegou antes, mais rápido dessa função waitroom._ready conectar o sinal

@@ -10,10 +10,10 @@ const Messages = preload("res://core/messages.gd")
 
 # Sinais
 
-signal room_list_updated(rooms: Array) # Lista de Salas (Network -> Cliente)
+signal room_list_updated(list_of_rooms: Array) # Lista de Salas (Network -> Cliente)
 signal room_updated(room_data: Dictionary) # Atualização de Sala (Network -> Cliente)
 signal game_started # TODO servidor não emite isso ainda
-#signal goto_wait_room #TODO servidor não emite isso ainda
+signal goto_wait_room #TODO servidor não emite isso ainda
 signal move_received(move_data: Dictionary) # Cliente recebe jogada (Network -> Cliente)
 signal game_over(payload: Dictionary) # Servidor anunciou fim de jogo (Servidor -> Network -> Cliente)
 
@@ -161,9 +161,9 @@ func rpc_receive_room_update(room_data: Dictionary):
 	
 	room_updated.emit(room_data) 
 	
-	#var scene = get_tree().current_scene
-	#if scene and scene.name in ["JoinRoomByCode", "PlayerProfile"]:
-		#goto_wait_room.emit() # Emite-se o sinal de ida para a sala de espera
+	var scene = get_tree().current_scene
+	if scene and scene.name in ["JoinRoomByCode", "PlayerProfile"]:
+		goto_wait_room.emit() # Emite-se o sinal de ida para a sala de espera
 
 @rpc("any_peer", "call_remote", "reliable")
 func rpc_receive_room_list(list: Array):
