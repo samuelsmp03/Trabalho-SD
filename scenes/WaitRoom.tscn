@@ -53,7 +53,7 @@ text = "Lista de jogadores:"
 [node name="playersList" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="CriarConvite" type="Button" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 text = "Criar Convite"

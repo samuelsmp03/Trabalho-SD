@@ -35,6 +35,16 @@ func _on_room_update(room_data: Dictionary):
 		var lbl = Label.new()
 		lbl.text = player.get("name", "???")
 		players_list.add_child(lbl)
-		
+	
+	# Verifica se tem a quantidade de jogadores desejados e inicia o jogo.
+	if room_data.get("players", []).size() == room_data.get("target_player_count", 0):
+		_on_start_game()
+	else:
+		print("não ok!")
+	
 func _on_start_game():
 	room_ocupancy_label.text = "Jogo iniciando..."
+	get_tree().call_deferred("change_scene_to_file", "res://Scenes/GameRoom.tscn")
+
+
+	
