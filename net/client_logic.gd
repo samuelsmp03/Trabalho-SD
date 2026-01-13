@@ -26,6 +26,10 @@ func _ready():
 		return
 
 # Conecta os sinais emitidos pelo NetworkManager (nossa camada RPC)
+	#if network.has_signal("room_list_updated"):
+		#network.room_updated.connect(_on_room_updated)
+		#pass
+		
 	if network.has_signal("room_updated"):
 		network.room_updated.connect(_on_room_updated)
 

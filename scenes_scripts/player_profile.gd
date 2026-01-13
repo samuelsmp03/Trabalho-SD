@@ -3,8 +3,8 @@ extends Control
 @onready var name_input = $MarginContainer/VBoxContainer/NameBox/LineEdit
 @onready var color_grid = $MarginContainer/VBoxContainer/GridContainer
 @onready var ok_button = $MarginContainer/VBoxContainer/MarginContainer/okButton
-@onready var network_manager = get_node("/root/NetworkManager")
-@onready var client_logic = $ClientLogic
+#@onready var network_manager = get_node("/root/NetworkManager")
+@onready var ClientLogic = get_node("/root/ClientLogic")
 var selected_color: Color = Color.WHITE
 var color_selected: bool = false
 
@@ -69,8 +69,8 @@ func _on_ok_pressed():
 		print("  Tabuleiro:", Global.pending_board_size, "x", Global.pending_board_size)
 		print("  Criador:", Global.my_name, "Cor:", Global.my_color)
 		
-		#TODO:  chamar o client_logic em vez de chamar o network_manager direto
-		client_logic.create_room(
+		#TODO:  chamar o ClientLogic em vez de chamar o network_manager direto
+		ClientLogic.create_room(
 			str(Global.pending_room_id),
 			int(Global.pending_num_players),
 			int(Global.pending_board_size)
@@ -85,7 +85,7 @@ func _on_ok_pressed():
 	# SEGUNDO Entrando em sala selecionada - TODO: FALTA IMPLEMENTAR
 	elif Global.selected_room_id != "":
 		print("=== ENTRANDO EM SALA EXISTENTE (selecionada) ===")
-		client_logic.join_room(Global.selected_room_id)
+		ClientLogic.join_room(Global.selected_room_id)
 		get_tree().call_deferred("change_scene_to_file", "res://scenes/WaitRoom.tscn")
 		return
 

@@ -2,18 +2,21 @@ extends TextureRect
 @onready var room_label = $MarginContainer/VBoxContainer/roomLabel
 @onready var room_ocupancy_label = $MarginContainer/VBoxContainer/statusLabel
 @onready var players_list = $MarginContainer/VBoxContainer/playersList
-@onready var network_manager = get_node("/root/NetworkManager")
+#@onready var network_manager = get_node("/root/NetworkManager")
+@onready var ClientLogic = get_node("/root/ClientLogic")
 
 func _ready():
 	room_ocupancy_label.text = "Aguardando jogadores..."
 	room_label.text = "Sala: " + str(Global.room_id if Global.room_id != "" else "--")
 
 
-	network_manager.room_updated.connect(_on_room_update)  #TODO: alterar aqui para tentar nao chamar network manager direto
-	network_manager.game_started.connect(_on_start_game)
+	#network_manager.room_updated.connect(_on_room_update)  #TODO: alterar aqui para tentar nao chamar network manager direto
+	#network_manager.game_started.connect(_on_start_game)
+	ClientLogic.room_state_changed.connect(_on_room_update)
+	ClientLogic.game_started.connect(_on_start_game)
 	
-	if network_manager.last_room_data.size() > 0: #aplica o úmtimo estado se chegou antes, mais rápido dessa função waitroom._ready conectar o sinal
-		_on_room_update(network_manager.last_room_data)
+	if ClientLogic.room_data.size() > 0: #aplica o úmtimo estado se chegou antes, mais rápido dessa função waitroom._ready conectar o sinal
+		_on_room_update(ClientLogic.room_data)
 	else:
 		room_ocupancy_label.text = "Aguardando jogadores..."
 		room_label.text = "Sala: " + str(Global.room_id if Global.room_id != "" else "--")

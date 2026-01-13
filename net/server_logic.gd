@@ -240,6 +240,7 @@ func _send_room_info_update(r_id: String):
 	room_data["players_details"] = players_list
 
 	for p_id in room.players:
+		# Envia room_update para o Network que en
 		get_parent().send_room_update_to(p_id, room_data)
 
 	print("Atualização da sala ", r_id, " enviada para ", room.players.size(), " jogadores.")
@@ -267,6 +268,7 @@ func _begin_game(room_id: String):
 	print("Iniciando jogo na sala: ", room_id)
 
 	for player_id in room.players:
+		
 		get_parent().send_start_game_to(player_id)
 
 	_send_room_info_update(room_id)
