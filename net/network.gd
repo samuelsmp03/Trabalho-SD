@@ -8,12 +8,14 @@ const ServerLogic = preload("res://net/server_logic.gd")
 const Messages = preload("res://core/messages.gd")
 
 
-signal room_list_updated(rooms: Array)
-signal room_updated(room_data: Dictionary)
-signal game_started
-signal goto_wait_room
-signal move_received(move_data: Dictionary)
-signal game_over(payload: Dictionary)
+# Sinais
+
+signal room_list_updated(rooms: Array) # Lista de Salas (Network -> Cliente)
+signal room_updated(room_data: Dictionary) # Atualização de Sala (Network -> Cliente)
+signal game_started # TODO servidor não emite isso ainda
+signal goto_wait_room #TODO servidor não emite isso ainda
+signal move_received(move_data: Dictionary) # Cliente recebe jogada (Network -> Cliente)
+signal game_over(payload: Dictionary) # Servidor anunciou fim de jogo (Servidor -> Network -> Cliente)
 
 var last_room_data: Dictionary = {} #Pra ajudar na hora de trocar de cena em wait_room.gd 
 var server_node: Node = null
