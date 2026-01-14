@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 Global="*res://autoload/global_data.gd"
 NetworkManager="*res://net/network.gd"
 ClientLogic="*res://net/client_logic.gd"
+UINotifier="*res://scenes/auxiliary_nodes/ui_notifier.tscn"
 
 [display]
 
