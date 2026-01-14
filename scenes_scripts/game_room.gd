@@ -1,8 +1,7 @@
 extends Node
 
 @export var board_view: Control
-@export var label_turno: Label
-@export var label_placar: Label
+@onready var label_turno: Label = $MarginContainer/HBoxContainer/TurnIndicator
 
 @onready var ClientLogic: Node = get_node("/root/ClientLogic")
 
@@ -53,7 +52,6 @@ func _on_move_received_from_server(move_data: Dictionary) -> void:
 	var color: Color = _get_player_color(author_id)
 
 	if board_view:
-		var raw = Global.room_players[author_id].get("color")
 
 		board_view.update_line_visual(line_type, x, y, color)
 
@@ -71,7 +69,6 @@ func _on_move_received_from_server(move_data: Dictionary) -> void:
 		var winner_id := int(ranking[0]["id"]) if ranking.size() > 0 else -1
 		print("[CLIENT] jogo finalizado, enviando request_game_over")
 		ClientLogic.request_game_over(ranking, winner_id)
-
 
 
 func _on_room_data_updated(_data: Dictionary) -> void:
@@ -95,23 +92,15 @@ func _update_ui_display() -> void:
 		if Global.room_players.has(current_id):
 			p_name = str(Global.room_players[current_id].get("name", "Sem Nome"))
 
+		var turn_color: Color = _get_player_color(current_id)
+
 		if ClientLogic.is_my_turn():
 			label_turno.text = "Sua vez!"
-			label_turno.modulate = TURN_COLOR_MY_TURN
+			label_turno.modulate = turn_color   
 		else:
 			label_turno.text = "Vez de: " + p_name
-			label_turno.modulate = TURN_COLOR_OTHER
+			label_turno.modulate = turn_color   
 
-	if label_placar:
-		var score_text: String = "Placar:\n"
-		for p_id in player_scores.keys():
-			var p_name: String = "Jogador"
-			if Global.room_players.has(p_id):
-				p_name = str(Global.room_players[p_id].get("name", "Jogador"))
-
-			score_text += "%s: %d\n" % [p_name, int(player_scores[p_id])]
-
-		label_placar.text = score_text
 
 
 func _get_player_color(p_id: int) -> Color:

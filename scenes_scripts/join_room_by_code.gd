@@ -120,3 +120,7 @@ func _get_status_text(status: int) -> String:
 		1: return "Em jogo"
 		2: return "Encerrada"
 		_: return "Desconhecido"
+
+
+func _on_back_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
