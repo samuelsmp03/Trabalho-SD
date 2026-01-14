@@ -12,13 +12,13 @@ var color_selected: bool = false
 func _ready():
 	# Mostra  fluxo que está acontecendo no console
 	if Global.pending_action == "create":
-		print("Perfil para CRIAR sala: ", Global.pending_room_id)
+		print("[PLAYER_PROFILE] Perfil para CRIAR sala: ", Global.pending_room_id)
 	elif Global.pending_action == "join_code":
-		print("Perfil para ENTRAR via código")
+		print("[PLAYER_PROFILE] Perfil para ENTRAR via código")
 	elif Global.selected_room_id != "":
-		print("Perfil para ENTRAR em sala selecionada: ", Global.selected_room_id)
+		print("[PLAYER_PROFILE] Perfil para ENTRAR em sala selecionada: ", Global.selected_room_id)
 	else:
-		print("Configure Seu Perfil")
+		print("[PLAYER_PROFILE] Configure Seu Perfil")
 
 	for button in color_grid.get_children():
 		if button is Button:
@@ -35,7 +35,7 @@ func _on_color_selected(color: Color):
 	selected_color = color
 	color_selected = true
 	ok_button.modulate = color
-	print("Cor selecionada confirmada: ", color)
+	print("[PLAYER_PROFILE] Cor selecionada confirmada: ", color)
 
 
 func _on_ok_pressed():
@@ -43,18 +43,18 @@ func _on_ok_pressed():
 
 	if p_name.length() < 3:
 		_shake_node(name_input)
-		print("Erro: Nome muito curto!")
+		print("[PLAYER_PROFILE] Erro: Nome muito curto!")
 		return
 
 	if not color_selected:
-		print("Erro: Escolha uma cor antes de continuar!")
+		print("[PLAYER_PROFILE] Erro: Escolha uma cor antes de continuar!")
 		return
 
 	# Salva perfil local
 	Global.my_name = p_name
 	Global.my_color = selected_color
 	Global.my_color_hex = selected_color.to_html(false) # "#RRGGBB"
-	print("Perfil salvo:", p_name, " HEX:", Global.my_color_hex)
+	print("[PLAYER_PROFILE] Perfil salvo:", p_name, " HEX:", Global.my_color_hex)
 	
 
 
@@ -66,10 +66,10 @@ func _on_ok_pressed():
 	if Global.pending_action == "create":
 		# opcional: protege caso ainda esteja conectando
 		if Global.my_id == 0:
-			print("Ainda conectando ao servidor... tente novamente.")
+			print("[PLAYER_PROFILE] Ainda conectando ao servidor... tente novamente.")
 			return
 
-		print("=== CRIANDO SALA NOVA ===")
+		print("=== [PLAYER_PROFILE] CRIANDO SALA NOVA ===")
 		print("Configuração da sala:")
 		print("  Nome:", Global.pending_room_id)
 		print("  Jogadores:", Global.pending_num_players)
@@ -90,21 +90,21 @@ func _on_ok_pressed():
 
 	# SEGUNDO Entrando em sala selecionada - TODO: FALTA IMPLEMENTAR
 	elif Global.selected_room_id != "":
-		print("=== ENTRANDO EM SALA EXISTENTE (selecionada) ===")
+		print("=== [PLAYER_PROFILE] ENTRANDO EM SALA EXISTENTE (selecionada) ===")
 		ClientLogic.join_room(Global.selected_room_id)
 		get_tree().call_deferred("change_scene_to_file", "res://scenes/WaitRoom.tscn")
 		return
 
 	# TERCEIRO Entrando via código (veio do botão Entrar Sala)
 	elif Global.pending_action == "join_code":
-		print("Indo para inserir código da sala...")
+		print("[PLAYER_PROFILE] Indo para inserir código da sala...")
 		# não limpa pending_action aqui; o Join Room by Code ainda depende disso 
 		get_tree().call_deferred("change_scene_to_file", "res://scenes/JoinRoomByCode.tscn")
 		return
 
 	# 4) fallback -> TODO:  Depois mudar esse fallback para entrar por selecao de sala
 	else:
-		print("Fluxo desconhecido. Indo para JoinRoomByCode...")
+		print("[PLAYER_PROFILE] Fluxo desconhecido. Indo para JoinRoomByCode...")
 		get_tree().call_deferred("change_scene_to_file", "res://scenes/JoinRoomByCode.tscn")
 
 

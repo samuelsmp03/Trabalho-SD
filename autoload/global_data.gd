@@ -3,6 +3,10 @@ extends Node
 
 const GameConfig = preload("res://core/game_config.gd")
 
+signal ui_event_pushed (event:Dictionary)  #sinal para enviar eventos para UI
+var _ui_queue: Array[Dictionary] = []   # fila se eventos para a UI
+
+
 var flag = ""
 var selected_room_id = ""
 var server_id: int = 1
@@ -62,3 +66,29 @@ func get_room_status_text() -> String:
 
 func reset_pending_data():
 	pending_room_data = {}
+	
+	
+# ---- EVENTOS PARA UI ----
+func push_ui_event(message: String, code: String = "") -> void:
+	if message.strip_edges() == "":
+		return
+	var ev: Dictionary = {"message": message, "code": code}
+	_ui_queue.append(ev)
+	print("[GLOBAL] UI event pushed. Code: ",code + ", Message:  "+ message)
+	ui_event_pushed.emit(ev)  #emite o sinal de evento para UI, junto com a mensagem e o código
+
+func pop_ui_event() -> Dictionary:
+	if _ui_queue.is_empty():
+		return {}
+	return _ui_queue.pop_front()
+
+func has_ui_event() -> bool:
+	return not _ui_queue.is_empty()
+
+#se precisar, apenas fazemos o push da mensagem:
+func push_ui_message(message: String) -> void:
+	push_ui_event(message, "")
+
+	
+	
+	

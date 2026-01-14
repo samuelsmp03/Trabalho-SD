@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://criwqgcruusvp"]
+
+[ext_resource type="Script" uid="uid://r5e7j1xb5ghb" path="res://scenes_scripts/ui_notifier.gd" id="1_podhs"]
+
+[node name="UiNotifier" type="CanvasLayer"]
+script = ExtResource("1_podhs")
+
+[node name="ErrorDialog" type="AcceptDialog" parent="."]
