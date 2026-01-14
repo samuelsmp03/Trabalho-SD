@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://3fri2dd60itd" path="res://assets/backgrounds/Paper Texture11.jpg" id="1_ow34m"]
 [ext_resource type="Script" uid="uid://cg6ks0pw38nra" path="res://scenes_scripts/main_menu.gd" id="2_l72w3"]
 [ext_resource type="FontFile" uid="uid://c4m2ab7yya3qs" path="res://assets/fonts/QueenSide/QueensidesMedium-x30zV.ttf" id="3_826wr"]
-[ext_resource type="PackedScene" uid="uid://cgyudqa0jrn1f" path="res://scenes/auxiliary_nodes/normalButton.tscn" id="4_ucygd"]
+[ext_resource type="PackedScene" uid="uid://cgyudqa0jrn1f" path="res://Scenes/auxiliary_nodes/normalButton.tscn" id="4_ucygd"]
 
 [node name="TextureRect" type="TextureRect"]
 anchors_preset = 15

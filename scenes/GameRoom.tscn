@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://ii4me1jxdlcr"]
+[gd_scene load_steps=7 format=3 uid="uid://ii4me1jxdlcr"]
 
 [ext_resource type="Texture2D" uid="uid://bnnfwgtw67vmr" path="res://assets/backgrounds/Paper Texture5.jpg" id="1_nfm3c"]
 [ext_resource type="Script" uid="uid://de5cvcrkwrhcq" path="res://scenes_scripts/game_room.gd" id="2_b0ydk"]
 [ext_resource type="Script" uid="uid://7agju6bscdin" path="res://scenes_scripts/board_view.gd" id="2_k5tff"]
 [ext_resource type="PackedScene" uid="uid://yc6ckoq3l0hg" path="res://Scenes/auxiliary_nodes/dot_scene.tscn" id="4_fkhyb"]
 [ext_resource type="PackedScene" uid="uid://daqki1jb8wr0s" path="res://Scenes/auxiliary_nodes/line_scene.tscn" id="5_ln6b3"]
+[ext_resource type="PackedScene" uid="uid://c6nnprsw57r5f" path="res://Scenes/auxiliary_nodes/box.tscn" id="6_ln6b3"]
 
 [node name="TextRect" type="TextureRect" node_paths=PackedStringArray("board_view")]
 anchors_preset = 15
@@ -30,6 +31,7 @@ layout_mode = 2
 script = ExtResource("2_k5tff")
 dot_scene = ExtResource("4_fkhyb")
 line_scene = ExtResource("5_ln6b3")
+box_scene = ExtResource("6_ln6b3")
 
 [node name="PlayerCard" type="VBoxContainer" parent="HBoxContainer"]
 layout_mode = 2

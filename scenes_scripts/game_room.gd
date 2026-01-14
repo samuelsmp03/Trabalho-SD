@@ -1,74 +1,149 @@
 extends Node
 
 @export var board_view: Control
-var board_logic: BoardState
+@export var label_turno: Label
+@export var label_placar: Label
 
-var local_player_id: int
-var current_turn_id: int
-var player_scores: Dictionary = {}
+@onready var client_logic: Node = get_node("/root/ClientLogic")
+
+const DEFAULT_COLOR_HEX := "#FFFFFF"
+const TURN_COLOR_MY_TURN := Color.GREEN
+const TURN_COLOR_OTHER := Color.WHITE
+
+var board_logic: BoardState
+var player_scores: Dictionary = {} # { player_id: int: score: int }
 
 func _ready() -> void:
-	local_player_id = multiplayer.get_unique_id()
-	
-	var size = 5 
+	var size: int = Global.board_size
 	board_logic = BoardState.new(size, size)
-	
-	board_view.setup_view(size, size, board_logic)
-	board_view.line_clicked.connect(_on_player_attempt_move)
-	
-	current_turn_id = 1 
+
+	if board_view:
+		board_view.setup_view(size, size, board_logic)
+		board_view.line_clicked.connect(_on_line_clicked_in_view)
+
+	client_logic.move_received.connect(_on_move_received_from_server)
+	client_logic.send_room_state_changed_to_UI.connect(_on_room_data_updated)
+	client_logic.game_over.connect(_on_game_over)
+
+	_initialize_scores()
+	_update_ui_display()
+
+	print("[GAME] Sala pronta. Meu ID: ", Global.my_id)
 
 
-func _on_player_attempt_move(type: String, x: int, y: int) -> void:
-	if multiplayer.get_unique_id() != current_turn_id:
-		print("Não é o seu turno!")
+func _on_line_clicked_in_view(line_type: String, x: int, y: int) -> void:
+	if not client_logic.is_my_turn():
+		print("Aguarde! É a vez do jogador: ", Global.current_turn_player_id)
 		return
-	
-	if board_logic.is_move_legal(type, x, y):
 
-		rpc_id(1, "request_move", type, x, y)
+	if not board_logic.is_move_legal(line_type, x, y):
+		return
+
+	var scored: bool = _predict_if_move_scores(line_type, x, y)
+	client_logic.make_move(line_type, x, y, scored)
 
 
+func _on_move_received_from_server(move_data: Dictionary) -> void:
+	var line_type: String = str(move_data.get("move_type", "h")).to_lower()
+	var x: int = int(move_data.get("pos_x", 0))
+	var y: int = int(move_data.get("pos_y", 0))
+	var author_id: int = int(move_data.get("author_id", -1))
 
-@rpc("any_peer", "call_remote", "reliable")
-func request_move(type: String, x: int, y: int) -> void:
-	if multiplayer.is_server():
-		rpc("execute_move", type, x, y, multiplayer.get_remote_sender_id())
+	var closed_boxes: Array = board_logic.apply_move(line_type, x, y, author_id)
+	var color: Color = _get_player_color(author_id)
 
-@rpc("any_peer", "call_local", "reliable")
-func execute_move(type: String, x: int, y: int, sender_id: int) -> void:
-	var closed_boxes = board_logic.apply_move(type, x, y, sender_id)
-	
-	var p_color = _get_player_color(sender_id)
-	board_view.update_line_visual(type, x, y, p_color)
-	
+	if board_view:
+		var raw = Global.room_players[author_id].get("color")
+		print("RAW COLOR=", raw)
+		print("PARSED COLOR=", _get_player_color(author_id))
+
+		board_view.update_line_visual(line_type, x, y, color)
+
+		if closed_boxes.size() > 0:
+			for box_coord in closed_boxes:
+				board_view.spawn_box(box_coord.x, box_coord.y, color)
+
 	if closed_boxes.size() > 0:
-		for box_coord in closed_boxes:
-			board_view.spawn_box(box_coord.x, box_coord.y, p_color)
-		
-		_update_score(sender_id, closed_boxes.size())
-	else:
-		_switch_turn()
+		_add_points(author_id, closed_boxes.size())
+
+	_update_ui_display()
 
 
-func _switch_turn() -> void:
+func _on_room_data_updated(_data: Dictionary) -> void:
+	_update_ui_display()
 
-	if current_turn_id == 1:
-		current_turn_id = _get_opponent_id()
-	else:
-		current_turn_id = 1
-	print("Turno do jogador: ", current_turn_id)
 
-func _update_score(p_id: int, points: int) -> void:
-	if not player_scores.has(p_id):
-		player_scores[p_id] = 0
-	player_scores[p_id] += points
+func _initialize_scores() -> void:
+	for p_id in Global.room_players.keys():
+		player_scores[int(p_id)] = 0
 
-	print("Jogador ", p_id, " fez ", points, " ponto(s). Total: ", player_scores[p_id])
+
+func _add_points(p_id: int, points: int) -> void:
+	player_scores[p_id] = int(player_scores.get(p_id, 0)) + points
+
+
+func _update_ui_display() -> void:
+	if label_turno:
+		var current_id: int = Global.current_turn_player_id
+		var p_name: String = "Desconhecido"
+
+		if Global.room_players.has(current_id):
+			p_name = str(Global.room_players[current_id].get("name", "Sem Nome"))
+
+		if client_logic.is_my_turn():
+			label_turno.text = "Sua vez!"
+			label_turno.modulate = TURN_COLOR_MY_TURN
+		else:
+			label_turno.text = "Vez de: " + p_name
+			label_turno.modulate = TURN_COLOR_OTHER
+
+	if label_placar:
+		var score_text: String = "Placar:\n"
+		for p_id in player_scores.keys():
+			var p_name: String = "Jogador"
+			if Global.room_players.has(p_id):
+				p_name = str(Global.room_players[p_id].get("name", "Jogador"))
+
+			score_text += "%s: %d\n" % [p_name, int(player_scores[p_id])]
+
+		label_placar.text = score_text
+
 
 func _get_player_color(p_id: int) -> Color:
+	if not Global.room_players.has(p_id):
+		return Color(DEFAULT_COLOR_HEX)
 
-	return Color.RED if p_id == 1 else Color.BLUE
+	var hex: String = str(Global.room_players[p_id].get("color", DEFAULT_COLOR_HEX))
+	if not hex.begins_with("#"):
+		hex = "#" + hex
 
-func _get_opponent_id() -> int:
-	return 0 
+	return Color(hex)
+
+
+func _predict_if_move_scores(tipo: String, x: int, y: int) -> bool:
+	# Previsão local: se fecha quadrado
+	if tipo == "h":
+		return _will_box_complete(x, y - 1) or _will_box_complete(x, y)
+
+	return _will_box_complete(x - 1, y) or _will_box_complete(x, y)
+
+
+func _will_box_complete(bx: int, by: int) -> bool:
+	if bx < 0 or bx >= board_logic.width - 1:
+		return false
+	if by < 0 or by >= board_logic.height - 1:
+		return false
+	if board_logic.boxes[bx][by] != 0:
+		return false
+
+	var count: int = 0
+	if board_logic.h_lines[bx][by] != 0: count += 1
+	if board_logic.h_lines[bx][by + 1] != 0: count += 1
+	if board_logic.v_lines[bx][by] != 0: count += 1
+	if board_logic.v_lines[bx + 1][by] != 0: count += 1
+
+	return count == 3
+
+
+func _on_game_over(payload: Dictionary) -> void:
+	print("Fim de jogo recebido! Vencedor: ", payload.get("winner_id"))

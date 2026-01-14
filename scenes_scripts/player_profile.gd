@@ -22,7 +22,11 @@ func _ready():
 
 	for button in color_grid.get_children():
 		if button is Button:
-			button.pressed.connect(_on_color_selected.bind(button.modulate))
+			# define a cor real do jogador (você escolhe aqui)
+			# se você já setou a cor no Inspector via modulate, copie uma vez e guarda em meta:
+			button.set_meta("pick_color", button.modulate)
+			button.pressed.connect(_on_color_selected.bind(button.get_meta("pick_color")))
+
 
 	ok_button.pressed.connect(_on_ok_pressed)
 
@@ -49,7 +53,10 @@ func _on_ok_pressed():
 	# Salva perfil local
 	Global.my_name = p_name
 	Global.my_color = selected_color
-	print("Perfil salvo: ", p_name, " - Cor: ", selected_color)
+	Global.my_color_hex = selected_color.to_html(false) # "#RRGGBB"
+	print("Perfil salvo:", p_name, " HEX:", Global.my_color_hex)
+	
+
 
 	# -------------------------
 	# DECISÃO DO FLUXO (ou cria sala vindo do Create Room, ou está entrando em sala existente - selecionada )
@@ -69,7 +76,6 @@ func _on_ok_pressed():
 		print("  Tabuleiro:", Global.pending_board_size, "x", Global.pending_board_size)
 		print("  Criador:", Global.my_name, "Cor:", Global.my_color)
 		
-		#TODO:  chamar o ClientLogic em vez de chamar o network_manager direto
 		ClientLogic.create_room(
 			str(Global.pending_room_id),
 			int(Global.pending_num_players),

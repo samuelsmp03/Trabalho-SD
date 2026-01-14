@@ -52,7 +52,16 @@ func handle_create_room(payload: Dictionary, sender_id: int) -> void:
 	var target_player_count := int(payload.get("num_players", 0))
 	var board_size := int(payload.get("board_size", 0))
 	var player_name := str(payload.get("player_name", ""))
-	var player_color := str(payload.get("player_color", "#FFFFFF"))
+	var player_color = payload.get("player_color", payload.get("color", "#FFFFFF"))
+
+	# Normaliza tudo para HEX "#RRGGBB"
+	if typeof(player_color) == TYPE_COLOR:
+		player_color = (player_color as Color).to_html()
+	elif typeof(player_color) == TYPE_ARRAY and player_color.size() >= 3:
+		var a = float(player_color[3]) if player_color.size() >= 4 else 1.0
+		player_color = Color(float(player_color[0]), float(player_color[1]), float(player_color[2]), a).to_html()
+	elif typeof(player_color) != TYPE_STRING:
+		player_color = "#FFFFFF"
 
 	if r_id == "ERRO_SEM_NOME" or target_player_count <= 0 or board_size <= 0:
 		print("[SERVIDOR] Payload inválido, abortando criação.")
@@ -155,6 +164,8 @@ func handle_make_move(payload: Dictionary, sender_id: int) -> void:
 
 	#Transmitindo jogada + id do autor para os outros
 	var sync_data = payload.duplicate()
+	
+	
 	sync_data["author_id"] = sender_id
 	sync_data["timestamp"] = Time.get_unix_time_from_system()
 
@@ -194,7 +205,6 @@ func handle_room_list(sender_id: int) -> void:
 
 	get_parent().send_room_list_to(sender_id, list_of_rooms)
 
-
 # ---- Funções INTERNAS (começam com _) ----
 func handle_game_over(payload: Dictionary, sender_id: int) -> void:
 	_handle_game_over(payload, sender_id)
@@ -216,7 +226,6 @@ func _handle_game_over(payload: Dictionary, sender_id: int) -> void:
 
 	for p_id in room.players:
 		get_parent().send_game_over_to(p_id, payload)
-
 
 #Função para atualizar estado do jogador, pq ele é criado sem alguns atributos.
 func _update_player_session(p_id: int, p_name:String, p_color:String, r_id: String):
@@ -246,7 +255,6 @@ func _send_room_info_update(r_id: String):
 			players_list.append(players[p_id].to_dict())
 
 	room_data["players_details"] = players_list
-
 	for p_id in room.players:
 		# Envia room_update para o Network que en
 		get_parent().send_room_update_to(p_id, room_data)

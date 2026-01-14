@@ -78,6 +78,8 @@ func _on_room_updated(new_room_data: Dictionary) -> void:
 	global.room_players = _players_list_to_dict(players_details)
 
 	send_room_state_changed_to_UI.emit(room_data)
+	
+
 
 
 func _on_game_started() -> void:
@@ -138,7 +140,6 @@ func get_players_details() -> Array:
 # -------------------------
 
 func _players_list_to_dict(list_data: Array) -> Dictionary:
-	# Converte [{id: X, ...}, ...] em { X: {...}, ... } para lookup rapido na UI
 	var d: Dictionary = {}
 	for p in list_data:
 		if typeof(p) == TYPE_DICTIONARY and p.has("id"):

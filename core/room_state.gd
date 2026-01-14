@@ -23,7 +23,7 @@ class PlayerState:
 	# converte o objeto PlayerState para dicionário
 	func to_dict() -> Dictionary:
 		return {
-			"peer_id": peer_id,
+			"id": peer_id,
 			"name": name,
 			"room_id": room_id,
 			"color": color, 

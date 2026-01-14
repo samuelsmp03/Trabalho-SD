@@ -81,7 +81,7 @@ func create_room(r_id: String, n_players: int, b_size: int):
 	var payload = Messages.create_room_config_payload(
 		r_id,
 		Global.my_name,
-		Global.my_color,
+		Global.my_color_hex,
 		n_players,
 		b_size
 	)
@@ -93,7 +93,7 @@ func join_room(r_id: String):
 		print("[CLIENTE] ainda não conectado (join_room)")
 		return
 
-	var payload = Messages.create_join_game_payload(r_id, Global.my_name, Global.my_color)
+	var payload = Messages.create_join_game_payload(r_id, Global.my_name, Global.my_color_hex)
 	rpc_id(Global.server_id, "rpc_request_join_room", payload)
 
 
@@ -161,9 +161,9 @@ func rpc_receive_room_update(room_data: Dictionary):
 	
 	room_updated.emit(room_data) 
 	
-	var scene = get_tree().current_scene
-	if scene and scene.name in ["JoinRoomByCode", "PlayerProfile"]:
-		goto_wait_room.emit() # Emite-se o sinal de ida para a sala de espera
+	#var scene = get_tree().current_scene
+	#if scene and scene.name in ["JoinRoomByCode", "PlayerProfile"]:
+		#goto_wait_room.emit() # Emite-se o sinal de ida para a sala de espera
 
 @rpc("any_peer", "call_remote", "reliable")
 func rpc_receive_room_list(list: Array):
