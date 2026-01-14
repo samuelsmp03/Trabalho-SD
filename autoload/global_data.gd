@@ -69,12 +69,13 @@ func reset_pending_data():
 	pending_room_data = {}
 	
 	
-	# ---- EVENTOS PARA UI ----
+# ---- EVENTOS PARA UI ----
 func push_ui_event(message: String, code: String = "") -> void:
 	if message.strip_edges() == "":
 		return
 	var ev: Dictionary = {"message": message, "code": code}
 	_ui_queue.append(ev)
+	print("[GLOBAL] UI event pushed. Code: ",code + ", Message:  "+ message)
 	ui_event_pushed.emit(ev)  #emite o sinal de evento para UI, junto com a mensagem e o código
 
 func pop_ui_event() -> Dictionary:
