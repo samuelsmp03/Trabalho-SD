@@ -1,5 +1,9 @@
-[gd_scene format=3 uid="uid://c6nnprsw57r5f"]
+[gd_scene load_steps=2 format=3 uid="uid://c6nnprsw57r5f"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4ts4m"]
+bg_color = Color(1, 1, 1, 1)
 
 [node name="Box" type="Panel"]
 custom_minimum_size = Vector2(80, 80)
 pivot_offset = Vector2(40, 40)
+theme_override_styles/panel = SubResource("StyleBoxFlat_4ts4m")
