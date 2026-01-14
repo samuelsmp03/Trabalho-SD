@@ -118,6 +118,11 @@ func make_move(tipo:String, x:int, y:int, scored:bool) -> void:
 func get_rooms_list() -> void:
 	if network:
 		network.get_rooms_list()
+		
+func request_game_over(ranking: Array, winner_id: int) -> void:
+	if network:
+		network.request_game_over(ranking, winner_id)
+
 
 
 

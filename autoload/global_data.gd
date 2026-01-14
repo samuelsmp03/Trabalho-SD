@@ -17,6 +17,7 @@ var my_color_hex: String = my_color.to_html()
 var room_id: String = ""      
 var is_host: bool = false      
 var room_players: Dictionary = {}
+var last_game_result: Dictionary = {}
 
 # ----- CONFIGURAÇÕES DO JOGO -----
 var board_size: int = GameConfig.DEFAULT_BOARD_SIZE  

@@ -111,6 +111,15 @@ func get_rooms_list():
 		print("[CLIENTE] ainda não conectado (get_rooms_list)")
 		return
 	rpc_id(Global.server_id, "rpc_request_room_list")
+	
+func request_game_over(ranking: Array, winner_id: int):
+	if not _ensure_connected():
+		print("[CLIENTE] ainda não conectado (request_game_over)")
+		return
+
+	var payload = Messages.create_game_over_payload(ranking, winner_id)
+	rpc_id(Global.server_id, "rpc_request_game_over", payload)
+
 
 
 # --- SEND helpers (usados pelo ServerLogic) ---
@@ -149,6 +158,12 @@ func rpc_request_make_move(payload: Dictionary):
 func rpc_request_room_list():
 	if multiplayer.is_server() and server_node:
 		server_node.handle_room_list(multiplayer.get_remote_sender_id())
+
+@rpc("any_peer", "call_remote", "reliable")
+func rpc_request_game_over(payload: Dictionary):
+	if multiplayer.is_server() and server_node:
+		server_node.handle_game_over(payload, multiplayer.get_remote_sender_id())
+
 
 
 # --- RPC: SERVIDOR -> CLIENTE ---

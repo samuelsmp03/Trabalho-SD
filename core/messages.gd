@@ -59,5 +59,10 @@ static func create_join_game_payload(r_id: String, p_name:String, p_color:Color)
 		"player_name": p_name,
 		"player_color": p_color.to_html(false)
 	}
+static func create_game_over_payload(ranking: Array, winner_id: int) -> Dictionary:
+	return {
+		"ranking": ranking,      # [{id,name,score}, ...] já ordenado
+		"winner_id": winner_id
+	}
 
 #TODO: create_game_over_payload

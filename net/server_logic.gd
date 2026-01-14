@@ -207,25 +207,24 @@ func handle_room_list(sender_id: int) -> void:
 
 # ---- Funções INTERNAS (começam com _) ----
 func handle_game_over(payload: Dictionary, sender_id: int) -> void:
-	_handle_game_over(payload, sender_id)
-
-
-func _handle_game_over(payload: Dictionary, sender_id: int) -> void:
-	var r_id = peer_to_room.get(sender_id, "")
-	if r_id == "":
+	var r_id: String = str(peer_to_room.get(sender_id, ""))
+	if r_id == "" or not rooms.has(r_id):
 		return
 
 	var room = rooms[r_id]
 
-	if room.token_owner != sender_id:
-		print("Aviso de fim de jogo ignorado pois o player não era dono da vez")
+	# evita repetição (2 clientes podem pedir ao mesmo tempo)
+	if room.status == GameConfig.RoomStatus.FINISHED:
 		return
 
 	room.status = GameConfig.RoomStatus.FINISHED
-	print("FIM DE JOGO NA SALA: ", r_id)
+	print("[SERVER] FIM DE JOGO NA SALA:", r_id)
 
 	for p_id in room.players:
 		get_parent().send_game_over_to(p_id, payload)
+
+	_send_room_info_update(r_id)
+
 
 #Função para atualizar estado do jogador, pq ele é criado sem alguns atributos.
 func _update_player_session(p_id: int, p_name:String, p_color:String, r_id: String):

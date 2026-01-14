@@ -4,7 +4,7 @@ extends Node
 @export var label_turno: Label
 @export var label_placar: Label
 
-@onready var client_logic: Node = get_node("/root/ClientLogic")
+@onready var ClientLogic: Node = get_node("/root/ClientLogic")
 
 const DEFAULT_COLOR_HEX := "#FFFFFF"
 const TURN_COLOR_MY_TURN := Color.GREEN
@@ -21,9 +21,9 @@ func _ready() -> void:
 		board_view.setup_view(size, size, board_logic)
 		board_view.line_clicked.connect(_on_line_clicked_in_view)
 
-	client_logic.move_received.connect(_on_move_received_from_server)
-	client_logic.send_room_state_changed_to_UI.connect(_on_room_data_updated)
-	client_logic.game_over.connect(_on_game_over)
+	ClientLogic.move_received.connect(_on_move_received_from_server)
+	ClientLogic.send_room_state_changed_to_UI.connect(_on_room_data_updated)
+	ClientLogic.game_over.connect(_on_game_over)
 
 	_initialize_scores()
 	_update_ui_display()
@@ -32,7 +32,7 @@ func _ready() -> void:
 
 
 func _on_line_clicked_in_view(line_type: String, x: int, y: int) -> void:
-	if not client_logic.is_my_turn():
+	if not ClientLogic.is_my_turn():
 		print("Aguarde! É a vez do jogador: ", Global.current_turn_player_id)
 		return
 
@@ -40,7 +40,7 @@ func _on_line_clicked_in_view(line_type: String, x: int, y: int) -> void:
 		return
 
 	var scored: bool = _predict_if_move_scores(line_type, x, y)
-	client_logic.make_move(line_type, x, y, scored)
+	ClientLogic.make_move(line_type, x, y, scored)
 
 
 func _on_move_received_from_server(move_data: Dictionary) -> void:
@@ -67,6 +67,13 @@ func _on_move_received_from_server(move_data: Dictionary) -> void:
 		_add_points(author_id, closed_boxes.size())
 
 	_update_ui_display()
+	
+	if _is_game_finished():
+		var ranking := _build_ranking()
+		var winner_id := int(ranking[0]["id"]) if ranking.size() > 0 else -1
+		print("[CLIENT] jogo finalizado, enviando request_game_over")
+		ClientLogic.request_game_over(ranking, winner_id)
+
 
 
 func _on_room_data_updated(_data: Dictionary) -> void:
@@ -90,7 +97,7 @@ func _update_ui_display() -> void:
 		if Global.room_players.has(current_id):
 			p_name = str(Global.room_players[current_id].get("name", "Sem Nome"))
 
-		if client_logic.is_my_turn():
+		if ClientLogic.is_my_turn():
 			label_turno.text = "Sua vez!"
 			label_turno.modulate = TURN_COLOR_MY_TURN
 		else:
@@ -144,6 +151,27 @@ func _will_box_complete(bx: int, by: int) -> bool:
 
 	return count == 3
 
+func _is_game_finished() -> bool:
+	for x in range(board_logic.width - 1):
+		for y in range(board_logic.height - 1):
+			if board_logic.boxes[x][y] == 0:
+				return false
+	return true
+
+func _build_ranking() -> Array:
+	var ranking: Array = []
+	for p_id in player_scores.keys():
+		var id := int(p_id)
+		ranking.append({
+			"id": id,
+			"name": str(Global.room_players[id].get("name", "Jogador")),
+			"score": int(player_scores[id])
+		})
+
+	ranking.sort_custom(func(a, b): return int(a["score"]) > int(b["score"]))
+	return ranking
 
 func _on_game_over(payload: Dictionary) -> void:
-	print("Fim de jogo recebido! Vencedor: ", payload.get("winner_id"))
+	print("[CLIENT] fim de jogo recebido")
+	Global.last_game_result = payload
+	#get_tree().change_scene_to_file("res://scenes/GameOver.tscn")
