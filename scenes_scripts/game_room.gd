@@ -1,7 +1,7 @@
 extends Node
 
 @export var board_view: Control
-@onready var label_turno: Label = $MarginContainer/HBoxContainer/TurnIndicator
+@onready var label_turno: Label = $MarginContainer/VBoxContainer/TurnIndicator
 
 @onready var ClientLogic: Node = get_node("/root/ClientLogic")
 

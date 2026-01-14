@@ -13,16 +13,24 @@ signal line_clicked(type: String, x: int, y: int)
 
 func setup_view(w: int, h: int, logic_ref: BoardState) -> void:
 	board_logic = logic_ref
-	# Limpa o tabuleiro antes de gerar um novo
-	for n in get_children(): 
+
+	for n in get_children():
 		n.queue_free()
-	
+
+	var board_w = (w - 1) * spacing
+	var board_h = (h - 1) * spacing
+	custom_minimum_size = Vector2(board_w, board_h)
+	size = custom_minimum_size
+
+	# offset centralizado
+	_recalc_offset(w, h)
+
 	# Gera as Linhas
 	for i in range(w):
 		for j in range(h):
 			if i < w - 1: _spawn_line("h", i, j)
 			if j < h - 1: _spawn_line("v", i, j)
-			
+
 	# Gera os Pontos
 	for i in range(w):
 		for j in range(h):
@@ -32,6 +40,7 @@ func setup_view(w: int, h: int, logic_ref: BoardState) -> void:
 			var dot_pos = Vector2(i * spacing, j * spacing) + offset
 			dot.position = dot_pos - (dot.size / 2.0)
 
+
 func _spawn_line(type: String, x: int, y: int) -> void:
 	var line = line_scene.instantiate() as Button
 	add_child(line) 
@@ -40,8 +49,6 @@ func _spawn_line(type: String, x: int, y: int) -> void:
 	if fill:
 		fill.color = Color.WHITE
 
-
-	
 	line.pivot_offset = line.size / 2.0
 	
 	var line_pos = Vector2.ZERO
@@ -87,11 +94,7 @@ func update_line_visual(type: String, x: int, y: int, color: Color) -> void:
 
 	# garante o Fill por cima
 	line_node.move_child(fill, line_node.get_child_count() - 1)
-
 	fill.color = Color(color.r, color.g, color.b, 1.0)
-
-
-
 	line_node.disabled = true
 
 
@@ -107,3 +110,11 @@ func spawn_box(bx: int, by: int, color: Color) -> void:
 
 	# Garante que a caixa fique atrás das linhas e pontos para não tapar o visual
 	move_child(box, 0)
+	
+func _recalc_offset(w: int, h: int) -> void:
+	# tamanho total do grid (distância do primeiro ponto ao último)
+	var board_w = (w - 1) * spacing
+	var board_h = (h - 1) * spacing
+
+	# centraliza dentro do tamanho do próprio Control
+	offset = (size - Vector2(board_w, board_h)) * 0.5
