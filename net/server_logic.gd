@@ -24,7 +24,7 @@ func setup() -> void:
 func _on_peer_connected(id: int):
 	# Cliente ainda não tem nome, nem sala.
 	# Aqui estamos registrando apenas o seu id que o Godot disponibiliza
-	print("Peer conectado ao servidor: ", id)
+	print("[SERVIDOR] Peer conectado ao servidor: ", id)
 
 	#Cleinte novo fica armazenado num PlayerState inicialmente vazio até ele se identificar no PlayerProfile
 	# Ele é atualizado na função create_room / join_room
@@ -32,7 +32,7 @@ func _on_peer_connected(id: int):
 
 
 func _on_peer_disconnected(id:int):
-	print ("Peer desconectado: ", id)
+	print ("[SERVIDOR] Peer desconectado: ", id)
 
 	# TODO: Depois temos que add aqui a função para tirar ele da sala e avisar os outros
 	# Ou fazer o tratamento necessário para reconexão
@@ -68,7 +68,7 @@ func handle_create_room(payload: Dictionary, sender_id: int) -> void:
 		return
 
 	if rooms.has(r_id):
-		print("Erro: Sala já existe.")
+		print("[SERVIDOR] Erro: Sala já existe.")
 		return
 
 	#Criando sala
@@ -87,9 +87,9 @@ func handle_create_room(payload: Dictionary, sender_id: int) -> void:
 	print("Sala ", r_id, " criada por ", player_name)
 
 	if not rooms.has(r_id):
-		print("[ERRO] rooms perdeu a sala logo após criar. r_id:", r_id)
+		print("[SERVIDOR] Erro: rooms perdeu a sala logo após criar. r_id:", r_id)
 		return
-	print("[DEBUG] create_room inst:", get_instance_id(), "rooms keys:", rooms.keys())
+	#print("[SERVIDOR DEBUG] create_room inst:", get_instance_id(), "rooms keys:", rooms.keys())
 
 	_send_room_info_update(r_id)
 
@@ -104,7 +104,7 @@ func handle_join_room(payload:Dictionary, sender_id: int) -> void:
 	print("[SERVIDOR]: Alguém quer entrar na sala: ", player_name)
 
 	if not rooms.has(r_id):
-		print("Erro: Sala ", r_id, " não encontrada.")
+		print("[SERVIDOR] Erro: Sala ", r_id, " não encontrada.")
 		#TODO: Depois temos que devolver o erro para o cliente
 		return
 
@@ -113,22 +113,22 @@ func handle_join_room(payload:Dictionary, sender_id: int) -> void:
 	var current_room : String = peer_to_room.get(sender_id, "")
 	#Jogador está em outra sala?
 	if current_room != "" and current_room != r_id:
-		print("Erro: peer ", sender_id, " já está na sala ", current_room, " e tentou entrar em ", r_id)
+		print("[SERVIDOR] Erro: peer ", sender_id, " já está na sala ", current_room, " e tentou entrar em ", r_id)
 		return
 
 	# Jogador já esta na sala?
 	if room.players.has(sender_id):
-		print("Aviso: peer ", sender_id, "já está na sala ", r_id)
+		print("[SERVIDOR] Aviso: peer ", sender_id, "já está na sala ", r_id)
 		return
 
 	#Sala está cheia?
 	if room.players.size() >= room.target_player_count:
-		print("Erro: Sala ", r_id, " já está cheia.")
+		print("[SERVIDOR] Erro: Sala ", r_id, " já está cheia.")
 		return
 
 	#O jogo já começou?
 	if room.status != GameConfig.RoomStatus.WAITING:
-		print("Erro: O jogo na sala ", r_id, " já está em andamento.")
+		print("[SERVIDOR] Erro: O jogo na sala ", r_id, " já está em andamento.")
 		return
 
 	# Se passou nas validações, adicionamos o jogador à sala
@@ -137,7 +137,7 @@ func handle_join_room(payload:Dictionary, sender_id: int) -> void:
 
 	#Atualizando playerState desse jogador
 	_update_player_session(sender_id, player_name, player_color, r_id)
-	print("Jogador ", player_name, " entrou na sala ", r_id)
+	print("[SERVIDOR] Jogador ", player_name, " entrou na sala ", r_id)
 
 	_send_room_info_update(r_id) #atualiza o wait_room quando um novo jogador entrar
 
@@ -159,7 +159,7 @@ func handle_make_move(payload: Dictionary, sender_id: int) -> void:
 	var room = rooms[r_id]
 
 	if room.token_owner != sender_id:
-		print("Tentativa de jogada fora de turno por: ", sender_id)
+		print("[SERVIDOR] Tentativa de jogada fora de turno por: ", sender_id)
 		return
 
 	#Transmitindo jogada + id do autor para os outros
@@ -218,7 +218,7 @@ func handle_game_over(payload: Dictionary, sender_id: int) -> void:
 		return
 
 	room.status = GameConfig.RoomStatus.FINISHED
-	print("[SERVER] FIM DE JOGO NA SALA:", r_id)
+	print("[SERVIDOR]FIM DE JOGO NA SALA:", r_id)
 
 	for p_id in room.players:
 		get_parent().send_game_over_to(p_id, payload)
@@ -238,10 +238,10 @@ func _update_player_session(p_id: int, p_name:String, p_color:String, r_id: Stri
 
 
 func _send_room_info_update(r_id: String):
-	print("[DEBUG] send_update inst:", get_instance_id(), " r_id:", r_id, " keys:", rooms.keys())
+	#print("[SERVIDOR] DEBUG send_update inst:", get_instance_id(), " r_id:", r_id, " keys:", rooms.keys())
 
 	if not rooms.has(r_id):
-		print("[ERRO]: Tentativa de atualizar sala inexistente: ", r_id)
+		print("[SERVIDOR] Erro : Tentativa de atualizar sala inexistente: ", r_id)
 		return
 	var room = rooms[r_id]  #Guarda a sala
 
@@ -258,7 +258,7 @@ func _send_room_info_update(r_id: String):
 		# Envia room_update para o Network que en
 		get_parent().send_room_update_to(p_id, room_data)
 
-	print("Atualização da sala ", r_id, " enviada para ", room.players.size(), " jogadores.")
+	print("[SERVIDOR] Atualização da sala ", r_id, " enviada para ", room.players.size(), " jogadores.")
 
 
 func _next_turn (r_id:String):
@@ -269,7 +269,7 @@ func _next_turn (r_id:String):
 
 	#Atualizando o jogador da vez
 	room.token_owner = room.players[next_idx]
-	print("Turno passou de ", room.players[current_idx], " para ", room.token_owner)
+	print("[SERVIDOR] Turno passou de ", room.players[current_idx], " para ", room.token_owner)
 
 	#Sincronizando com todos
 	_send_room_info_update(r_id)
@@ -280,7 +280,7 @@ func _begin_game(room_id: String):
 	room.status = GameConfig.RoomStatus.PLAYING
 	room.token_owner = room.players[0]
 
-	print("Iniciando jogo na sala: ", room_id)
+	print("[SERVIDOR] Iniciando jogo na sala: ", room_id)
 
 	for player_id in room.players:
 		

@@ -1,38 +1,9 @@
 extends RefCounted
 
-# Este arquivo define o protocolo de comunicação
-# Estamos usando mensagens para cada tipo de comando/evento
-
-# ----- GERENCIAMENTO -----
-
-const REQUEST_CREATE_ROOM = "request_create_room"
-const REQUEST_JOIN_ROOM = "request_join_room"
-const REQUEST_ROOM_LIST = "request_room_list"
-const RECEIVE_ROOM_LIST = "receive_room_list"
-const START_GAME = "start_game"
-#adicionar player_config se precisarmos
-
-#---- Sala ----
-const RECEIVE_ROOM_UPDATE = "receive_room_update"
-
-
-# ---- LOGICA DO JOGO -----
-const REQUEST_MAKE_MOVE = "request_make_move" #cliente envia jogada para servidor
-const BROADCAST_MOVE = "broadcast_move" #servidor envia jogada para os clientes aplicarem o movimento
-
-# ---- FIM DE JOGO -----
-const REQUEST_GAME_OVER = "request_game_over"   #Cliente notifica que o jogo acabou
-const BROADCAST_GAME_OVER = "broadcast_game_over"   #Servidor avisa a todos que o jogo acabou
-
-# ---- RECONEXÃO ----
-const REQUEST_RECONNECT_STATE = "request_reconnect_state"
-const RECEIVE_RECONNECT_STATE = "receive_reconnect_state"
-
 # ---- ESTRUTURA DOS PAYLOADS -----
 
 static func create_room_config_payload(room_id:String, player_name:String, player_color: Color, num_players: int, board_size: int) -> Dictionary:
 	#criador do jogo (host) define numero de jogadores e tamanho da malha
-	print("Passou por aqui: create_Room_config_payload em messages")
 	return {
 		"room_id": room_id,
 		"player_name": player_name,
@@ -66,3 +37,10 @@ static func create_game_over_payload(ranking: Array, winner_id: int) -> Dictiona
 	}
 
 #TODO: create_game_over_payload
+
+
+#----- EVENTOS LOCAIS (não é RPC) -------
+const EVT_CONNECTION_ESTABLISH_FAILED = "evt_connection_establish_failed"
+const EVT_CONNECTION_LOST             = "evt_connection_lost"
+const EVT_DISCONNECTED_NORMALLY       = "evt_disconnected_normally"
+const EVT_CONNECTION_ESTABLISHED      = "evt_connection_established"
