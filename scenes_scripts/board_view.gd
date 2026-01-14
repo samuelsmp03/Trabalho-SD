@@ -72,7 +72,6 @@ func _on_line_pressed(line_node: Button) -> void:
 	# Verificação local rápida apenas para evitar cliques em linhas já ocupadas
 	if board_logic.is_move_legal(type, x, y):
 		
-		#print("[CLICK] type=", type, " x=", x, " y=", y)
 		line_clicked.emit(type, x, y)
 
 # Esta função é chamada pela GameRoom quando o servidor confirma a jogada
@@ -82,8 +81,6 @@ func update_line_visual(type: String, x: int, y: int, color: Color) -> void:
 	if not line_node:
 		print("NAO ACHOU LINHA:", line_name)
 		return
-
-	print("ACHOU LINHA:", line_name, " filhos=", line_node.get_children())
 
 	var fill := line_node.get_node("Fill") as ColorRect
 	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
