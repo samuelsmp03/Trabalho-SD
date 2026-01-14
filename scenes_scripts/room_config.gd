@@ -14,7 +14,7 @@ func _on_ok_button_pressed() -> void:
 	
 	if num_players < 2 or num_players > 5:
 		erro_msg = "A sala deve ter entre 2 e 5 jogadores!"
-	elif b_size < 5 or b_size > 10:
+	elif b_size < 3 or b_size > 10: #TODO VOLTAR PARA 5
 		erro_msg = "O tabuleiro deve ter entre 5 e 10!"
 		
 	if erro_msg != "":

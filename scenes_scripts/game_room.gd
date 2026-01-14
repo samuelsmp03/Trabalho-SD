@@ -54,8 +54,6 @@ func _on_move_received_from_server(move_data: Dictionary) -> void:
 
 	if board_view:
 		var raw = Global.room_players[author_id].get("color")
-		print("RAW COLOR=", raw)
-		print("PARSED COLOR=", _get_player_color(author_id))
 
 		board_view.update_line_visual(line_type, x, y, color)
 
@@ -172,6 +170,5 @@ func _build_ranking() -> Array:
 	return ranking
 
 func _on_game_over(payload: Dictionary) -> void:
-	print("[CLIENT] fim de jogo recebido")
 	Global.last_game_result = payload
-	#get_tree().change_scene_to_file("res://scenes/GameOver.tscn")
+	get_tree().change_scene_to_file("res://scenes/GameOver.tscn")

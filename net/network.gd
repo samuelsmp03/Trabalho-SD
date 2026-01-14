@@ -13,7 +13,7 @@ const Messages = preload("res://core/messages.gd")
 signal room_list_updated(list_of_rooms: Array) # Lista de Salas (Network -> Cliente)
 signal room_updated(room_data: Dictionary) # Atualização de Sala (Network -> Cliente)
 signal game_started # TODO servidor não emite isso ainda
-signal goto_wait_room #TODO servidor não emite isso ainda
+#signal goto_wait_room #TODO servidor não emite isso ainda
 signal move_received(move_data: Dictionary) # Cliente recebe jogada (Network -> Cliente)
 signal game_over(payload: Dictionary) # Servidor anunciou fim de jogo (Servidor -> Network -> Cliente)
 

@@ -91,7 +91,7 @@ func _on_move_received(move_data: Dictionary) -> void:
 
 
 func _on_game_over(payload: Dictionary) -> void:
-	global.room_status = global.GameConfig.RoomStatus.FINISHED
+	Global.last_game_result = payload
 	game_over.emit(payload)
 	
 func _on_room_list_updated(list_of_rooms:Array) -> void:
