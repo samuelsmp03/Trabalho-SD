@@ -9,6 +9,9 @@ const Messages = preload("res://core/messages.gd")
 
 
 # Sinais
+signal connection_established  
+signal connection_established_failed
+
 
 signal room_list_updated(list_of_rooms: Array) # Lista de Salas (Network -> Cliente)
 signal room_updated(room_data: Dictionary) # Atualização de Sala (Network -> Cliente)
@@ -31,7 +34,7 @@ func start_dedicated_server(port: int):
 	var peer = WebSocketMultiplayerPeer.new()
 	var err := peer.create_server(port)
 	if err != OK:
-		push_error("[SERVIDOR] create_server falhou: %s" % err)
+		push_error("[NETWORK] create_server falhou: %s" % err)
 		return
 
 	multiplayer.multiplayer_peer = peer
@@ -42,20 +45,20 @@ func start_dedicated_server(port: int):
 	server_node.setup()
 	
 
-	print("[SERVIDOR] Online na porta ", port)
+	print("[NETWORK] Servidor online na porta ", port)
 
 
 func start_client(ip: String, port: int):
 	var peer = WebSocketMultiplayerPeer.new()
 	var err = peer.create_client("ws://" + ip + ":" + str(port))
 	if err != OK:
-		push_error("[CLIENTE] create_client falhou: %s" % err)
+		push_error("[NETWORK] create_client falhou: %s" % err)
 		return
 
 	multiplayer.multiplayer_peer = peer
 	multiplayer.connected_to_server.connect(_on_connected)
 	multiplayer.connection_failed.connect(_on_failed)
-	print("[CLIENTE] Conectando...")
+	print("[NETWORK] Conectando cliente...")
 
 
 func _on_connected():
@@ -64,11 +67,16 @@ func _on_connected():
 	var peers := multiplayer.get_peers()
 	Global.server_id = peers[0] if peers.size() > 0 else 1
 
-	print("[CLIENTE] conectado. my_id=", Global.my_id, " server_id=", Global.server_id)
+	connection_established.emit()
+	
+	
+	print("[NETWORK] Cliente conectado. my_id=", Global.my_id, " server_id=", Global.server_id)
+	
 
 
 func _on_failed():
-	push_error("[CLIENTE] Falha ao conectar")
+	connection_established_failed.emit()
+	push_error("[NETWORK] Falha ao conectar cliente")
 
 
 
