@@ -98,7 +98,7 @@ func create_room(r_id: String, n_players: int, b_size: int):
 
 func join_room(r_id: String):
 	if not _ensure_connected():
-		print("[CLIENTE] ainda não conectado (join_room)")
+		print("[NETWORK] Cliente ainda não conectado (join_room)")
 		return
 
 	var payload = Messages.create_join_game_payload(r_id, Global.my_name, Global.my_color_hex)
@@ -107,7 +107,7 @@ func join_room(r_id: String):
 
 func make_move(tipo: String, x: int, y: int, scored: bool):
 	if not _ensure_connected():
-		print("[CLIENTE] ainda não conectado (make_move)")
+		print("[NETWORK] Cliente ainda não conectado (make_move)")
 		return
 
 	var payload = Messages.create_move_payload(tipo, x, y, scored)
@@ -116,13 +116,13 @@ func make_move(tipo: String, x: int, y: int, scored: bool):
 
 func get_rooms_list():
 	if not _ensure_connected():
-		print("[CLIENTE] ainda não conectado (get_rooms_list)")
+		print("[NETWORK] Cliente ainda não conectado (get_rooms_list)")
 		return
 	rpc_id(Global.server_id, "rpc_request_room_list")
 	
 func request_game_over(ranking: Array, winner_id: int):
 	if not _ensure_connected():
-		print("[CLIENTE] ainda não conectado (request_game_over)")
+		print("[NETWORK] Cliente ainda não conectado (request_game_over)")
 		return
 
 	var payload = Messages.create_game_over_payload(ranking, winner_id)
