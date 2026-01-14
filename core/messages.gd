@@ -4,7 +4,6 @@ extends RefCounted
 
 static func create_room_config_payload(room_id:String, player_name:String, player_color: Color, num_players: int, board_size: int) -> Dictionary:
 	#criador do jogo (host) define numero de jogadores e tamanho da malha
-	print("Passou por aqui: create_Room_config_payload em messages")
 	return {
 		"room_id": room_id,
 		"player_name": player_name,

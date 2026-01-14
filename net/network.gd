@@ -9,9 +9,6 @@ const Messages = preload("res://core/messages.gd")
 
 
 # Sinais
-signal connection_established  
-signal connection_established_failed
-
 
 signal room_list_updated(list_of_rooms: Array) # Lista de Salas (Network -> Cliente)
 signal room_updated(room_data: Dictionary) # Atualização de Sala (Network -> Cliente)
@@ -23,7 +20,19 @@ signal game_over(payload: Dictionary) # Servidor anunciou fim de jogo (Servidor 
 var last_room_data: Dictionary = {} #Pra ajudar na hora de trocar de cena em wait_room.gd 
 var server_node: Node = null
 
-
+func _ready():
+	#Conectando nos sinais
+	#Connected to server
+	if not multiplayer.connected_to_server.is_connected(_on_connected):
+		multiplayer.connected_to_server.connect(_on_connected)
+	
+	#Connection failed	
+	if not multiplayer.connection_failed.is_connected(_on_failed):
+		multiplayer.connection_failed.connect(_on_failed)
+	#Server disconnected	
+	if not multiplayer.server_disconnected.is_connected(_on_server_disconnected):
+		multiplayer.server_disconnected.connect(_on_server_disconnected)
+	
 
 func _ensure_connected() -> bool:
 	return multiplayer.multiplayer_peer != null and \
@@ -49,6 +58,24 @@ func start_dedicated_server(port: int):
 
 
 func start_client(ip: String, port: int):
+	# fecha peer anterior se existir
+	if multiplayer.multiplayer_peer:
+		multiplayer.multiplayer_peer.close()
+		multiplayer.multiplayer_peer = null
+
+	var peer := WebSocketMultiplayerPeer.new()
+	var err := peer.create_client("ws://" + ip + ":" + str(port))
+	if err != OK:
+		push_error("[NETWORK] create_client falhou: %s" % err)
+		return
+
+	multiplayer.multiplayer_peer = peer
+	print("[NETWORK] Conectando cliente... ws://%s:%s" % [ip, str(port)])
+
+
+
+func start_client_directly_on_network(ip: String, port: int):
+	#Sem suporte para reconexão
 	var peer = WebSocketMultiplayerPeer.new()
 	var err = peer.create_client("ws://" + ip + ":" + str(port))
 	if err != OK:
@@ -58,6 +85,7 @@ func start_client(ip: String, port: int):
 	multiplayer.multiplayer_peer = peer
 	multiplayer.connected_to_server.connect(_on_connected)
 	multiplayer.connection_failed.connect(_on_failed)
+	multiplayer.server_disconnected.connect(_on_server_disconnected)
 	print("[NETWORK] Conectando cliente...")
 
 
@@ -66,18 +94,17 @@ func _on_connected():
 
 	var peers := multiplayer.get_peers()
 	Global.server_id = peers[0] if peers.size() > 0 else 1
-
-	connection_established.emit()
-	
 	
 	print("[NETWORK] Cliente conectado. my_id=", Global.my_id, " server_id=", Global.server_id)
 	
 
 
 func _on_failed():
-	connection_established_failed.emit()
 	push_error("[NETWORK] Falha ao conectar cliente")
 
+func _on_server_disconnected():
+	push_error("[NETWORK] Servidor desconectou")
+	# TODO: tratar queda durante o jogo
 
 
 # --- API para o Client Logic ---
@@ -127,7 +154,6 @@ func request_game_over(ranking: Array, winner_id: int):
 
 	var payload = Messages.create_game_over_payload(ranking, winner_id)
 	rpc_id(Global.server_id, "rpc_request_game_over", payload)
-
 
 
 # --- SEND helpers (usados pelo ServerLogic) ---

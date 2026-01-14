@@ -43,11 +43,11 @@ func _on_room_update(room_data: Dictionary):
 	if room_data.get("players", []).size() == room_data.get("target_player_count", 0):
 		_on_start_game()
 	else:
-		print("não ok!")
+		print("[WAIT ROOM] Ainda não tem a quantidade de jogadores necessários para iniciar o jogo")
 	
 func _on_start_game():
 	room_ocupancy_label.text = "Jogo iniciando..."
-	get_tree().call_deferred("change_scene_to_file", "res://Scenes/GameRoom.tscn")
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/GameRoom.tscn")
 
 
 	
