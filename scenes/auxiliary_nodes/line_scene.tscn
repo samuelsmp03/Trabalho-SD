@@ -1,10 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://daqki1jb8wr0s"]
+[gd_scene load_steps=6 format=3 uid="uid://daqki1jb8wr0s"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kbavb"]
 bg_color = Color(1, 1, 1, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bcokb"]
 bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_su3ie"]
+bg_color = Color(0.5327125, 0.53271234, 0, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jtf3j"]
 bg_color = Color(1, 1, 1, 1)
@@ -18,6 +21,7 @@ offset_bottom = 8.0
 pivot_offset = Vector2(40, 5)
 theme_override_styles/normal = SubResource("StyleBoxFlat_kbavb")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_bcokb")
+theme_override_styles/hover = SubResource("StyleBoxFlat_su3ie")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_jtf3j")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_sfbp7")
 

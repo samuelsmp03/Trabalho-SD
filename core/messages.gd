@@ -36,11 +36,10 @@ static func create_game_over_payload(ranking: Array, winner_id: int) -> Dictiona
 		"winner_id": winner_id
 	}
 
-#TODO: create_game_over_payload
-
 
 #----- EVENTOS LOCAIS (não é RPC) -------
 const EVT_CONNECTION_ESTABLISH_FAILED = "evt_connection_establish_failed"
 const EVT_CONNECTION_LOST             = "evt_connection_lost"
 const EVT_DISCONNECTED_NORMALLY       = "evt_disconnected_normally"
 const EVT_CONNECTION_ESTABLISHED      = "evt_connection_established"
+const EVT_SERVER_DISCONNECTED = "evt_server_disconnected"

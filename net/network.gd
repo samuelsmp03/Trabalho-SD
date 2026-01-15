@@ -103,6 +103,7 @@ func _on_failed():
 	push_error("[NETWORK] Falha ao conectar cliente")
 
 func _on_server_disconnected():
+	Global.push_ui_event("Servidor desconectou",Messages.EVT_SERVER_DISCONNECTED)
 	push_error("[NETWORK] Servidor desconectou")
 	# TODO: tratar queda durante o jogo
 

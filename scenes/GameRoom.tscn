@@ -3,9 +3,9 @@
 [ext_resource type="Texture2D" uid="uid://bnnfwgtw67vmr" path="res://assets/backgrounds/Paper Texture5.jpg" id="1_nfm3c"]
 [ext_resource type="Script" uid="uid://de5cvcrkwrhcq" path="res://scenes_scripts/game_room.gd" id="2_b0ydk"]
 [ext_resource type="Script" uid="uid://7agju6bscdin" path="res://scenes_scripts/board_view.gd" id="2_k5tff"]
-[ext_resource type="PackedScene" uid="uid://yc6ckoq3l0hg" path="res://Scenes/auxiliary_nodes/dot_scene.tscn" id="4_fkhyb"]
-[ext_resource type="PackedScene" uid="uid://daqki1jb8wr0s" path="res://Scenes/auxiliary_nodes/line_scene.tscn" id="5_ln6b3"]
-[ext_resource type="PackedScene" uid="uid://c6nnprsw57r5f" path="res://Scenes/auxiliary_nodes/box.tscn" id="6_ln6b3"]
+[ext_resource type="PackedScene" uid="uid://yc6ckoq3l0hg" path="res://scenes/auxiliary_nodes/dot_scene.tscn" id="4_fkhyb"]
+[ext_resource type="PackedScene" uid="uid://daqki1jb8wr0s" path="res://scenes/auxiliary_nodes/line_scene.tscn" id="5_ln6b3"]
+[ext_resource type="PackedScene" uid="uid://c6nnprsw57r5f" path="res://scenes/auxiliary_nodes/box.tscn" id="6_ln6b3"]
 
 [node name="TextRect" type="TextureRect" node_paths=PackedStringArray("board_view")]
 anchors_preset = 15
@@ -16,34 +16,36 @@ grow_vertical = 2
 texture = ExtResource("1_nfm3c")
 expand_mode = 2
 script = ExtResource("2_b0ydk")
-board_view = NodePath("HBoxContainer/CenterContainer/BoardContainer")
+board_view = NodePath("MarginContainer/VBoxContainer/CenterContainer/BoardContainer")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_top = 25
 
-[node name="CenterContainer" type="CenterContainer" parent="HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
 
-[node name="BoardContainer" type="Control" parent="HBoxContainer/CenterContainer"]
+[node name="TurnIndicator" type="Label" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 32
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BoardContainer" type="Control" parent="MarginContainer/VBoxContainer/CenterContainer"]
 layout_mode = 2
 script = ExtResource("2_k5tff")
 dot_scene = ExtResource("4_fkhyb")
 line_scene = ExtResource("5_ln6b3")
 box_scene = ExtResource("6_ln6b3")
-
-[node name="PlayerCard" type="VBoxContainer" parent="HBoxContainer"]
-layout_mode = 2
-
-[node name="ColorRect" type="ColorRect" parent="HBoxContainer/PlayerCard"]
-layout_mode = 2
-
-[node name="PlayerName" type="Label" parent="HBoxContainer/PlayerCard"]
-layout_mode = 2
-
-[node name="ScoreLabel" type="Label" parent="HBoxContainer/PlayerCard"]
-layout_mode = 2
-
-[node name="TurnIndicator" type="TextureRect" parent="HBoxContainer/PlayerCard"]
-layout_mode = 2

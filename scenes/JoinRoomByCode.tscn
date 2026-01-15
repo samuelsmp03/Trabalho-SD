@@ -81,4 +81,5 @@ size_flags_horizontal = 4
 text = "Nenhuma sala disponível no momento"
 horizontal_alignment = 1
 
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/okButton" to="." method="_on_ok_button_pressed"]
