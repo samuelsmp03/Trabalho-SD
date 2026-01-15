@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://beewghgf04veh" path="res://assets/backgrounds/Paper Texture4.jpg" id="1_sl38j"]
 [ext_resource type="Script" uid="uid://gpwywupf233a" path="res://scenes_scripts/player_profile.gd" id="2_8xpk2"]
 [ext_resource type="FontFile" uid="uid://crhc1n00dhr4g" path="res://assets/fonts/Swansea/SwanseaBoldItalic-p3Dv.ttf" id="3_xpmhs"]
-[ext_resource type="StyleBox" uid="uid://dfvnu7xvkhll3" path="res://Scenes/styles/LobbyStartPlayer.tres" id="4_d5fp6"]
+[ext_resource type="StyleBox" uid="uid://dfvnu7xvkhll3" path="res://scenes/styles/LobbyStartPlayer.tres" id="4_d5fp6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n0kmb"]
 border_width_left = 5

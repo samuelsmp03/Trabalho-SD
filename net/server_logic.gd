@@ -9,13 +9,22 @@ var players : Dictionary = {} # {peer_id(int) : PlayerState}
 var rooms: Dictionary = {}    # {room_id(String): RoomState}
 var peer_to_room: Dictionary = {}  # Atalho mais rápido entre salas e jogadores, peer_id(int): room_id (String) }
 
-
+# Cores disponíveis
+const AVAILABLE_COLORS: Array[String] = [
+	"#FB5677",
+	"#00B29A",
+	"#000082",
+	"#C000D8",
+	"#BFC3FF",
+	"#C67500"
+]
 
 # ---- Função de inicialização do servidor ----
 # OBS:  quem inicia o servidor de rede é o Network.gd (autoload).
 # Então este script só precisa "escutar" eventos de conexão/desconexão.
 
 func setup() -> void:
+	randomize() # Para poder sortear uma cor caso usuario selecione uma já usada
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 	print("[SERVIDOR] ServerLogic pronto. Meu node path: ", get_path())
@@ -169,6 +178,8 @@ func handle_join_room(payload:Dictionary, sender_id: int) -> void:
 	var r_id := str(payload.get("room_id", ""))
 	var player_name := str(payload.get("player_name", ""))
 	var player_color := str(payload.get("player_color", "#FFFFFF"))
+	# Garantindo que a cor do jogador é única
+	player_color = _ensure_unique_color(r_id, str(player_color))
 
 	print("[SERVIDOR]: Alguém quer entrar na sala: ", player_name)
 
@@ -304,6 +315,38 @@ func _update_player_session(p_id: int, p_name:String, p_color:String, r_id: Stri
 
 	#Criando atalho para dicionario de busca rapida
 	peer_to_room[p_id] = r_id
+
+# Retorna quais cores estão sendo usadas
+func _get_used_colors(room_id: String) -> Dictionary:
+	var used := {}
+	if not rooms.has(room_id):
+		return used
+
+	var room = rooms[room_id]
+	for pid in room.players:
+		if players.has(pid):
+			used[str(players[pid].color)] = true
+	return used
+
+func _ensure_unique_color(room_id: String, requested_color: String) -> String:
+	var used := _get_used_colors(room_id)
+
+	# Se a cor pedida é válida e não está em uso, aceita
+	if AVAILABLE_COLORS.has(requested_color) and not used.has(requested_color):
+		return requested_color
+
+	# Lista de cores livres
+	var free_colors: Array[String] = []
+	for c in AVAILABLE_COLORS:
+		if not used.has(c):
+			free_colors.append(c)
+
+	# Se ainda tem cores livres, escolhe uma aleatória
+	if free_colors.size() > 0:
+		return free_colors[randi() % free_colors.size()]
+
+	# Fallback (não deveria acontecer se max_players <= 6)
+	return AVAILABLE_COLORS[randi() % AVAILABLE_COLORS.size()]
 
 
 func _send_room_info_update(r_id: String):
