@@ -2,8 +2,12 @@ extends Node
 
 @export var board_view: Control
 @onready var label_turno: Label = $MarginContainer/VBoxContainer/TurnIndicator
+@onready var label_timer: Label = $MarginContainer/VBoxContainer/TurnTimerLabel
+
 
 @onready var ClientLogic: Node = get_node("/root/ClientLogic")
+const GameConfig = preload("res://core/game_config.gd")
+
 
 const DEFAULT_COLOR_HEX := "#FFFFFF"
 const TURN_COLOR_MY_TURN := Color.GREEN
@@ -11,6 +15,11 @@ const TURN_COLOR_OTHER := Color.WHITE
 
 var board_logic: BoardState
 var player_scores: Dictionary = {} # { player_id: int: score: int }
+
+var turn_end_server_ms: int = 0
+var turn_duration_sec: float = 0.0
+var server_offset_ms: int = 0
+
 
 func _ready() -> void:
 	var size: int = Global.board_size
@@ -23,11 +32,17 @@ func _ready() -> void:
 	ClientLogic.move_received.connect(_on_move_received_from_server)
 	ClientLogic.send_room_state_changed_to_UI.connect(_on_room_data_updated)
 	ClientLogic.game_over.connect(_on_game_over)
-
+	
+		
+	var net := get_node("/root/NetworkManager")
+	if net and net.last_room_data.size() > 0:
+		_on_room_data_updated(net.last_room_data)
+	
 	_initialize_scores()
 	_update_ui_display()
 
 	print("[GAME] Sala pronta. Meu ID: ", Global.my_id)
+
 
 
 func _on_line_clicked_in_view(line_type: String, x: int, y: int) -> void:
@@ -71,9 +86,22 @@ func _on_move_received_from_server(move_data: Dictionary) -> void:
 		ClientLogic.request_game_over(ranking, winner_id)
 
 
-func _on_room_data_updated(_data: Dictionary) -> void:
+func _on_room_data_updated(data: Dictionary) -> void:
 	_update_ui_display()
+	
+	if data.has("server_now_ms"):
+		server_offset_ms = int(data["server_now_ms"]) - Time.get_ticks_msec()
 
+	# arma o fim do turno
+	if data.has("turn_started_server_ms") and data.has("turn_duration_sec"):
+		var started_ms: int = int(data["turn_started_server_ms"])
+		turn_duration_sec = float(data["turn_duration_sec"])
+		turn_end_server_ms = started_ms + int(turn_duration_sec * 1000.0)
+	else:
+		turn_end_server_ms = 0
+	
+	
+	
 
 func _initialize_scores() -> void:
 	for p_id in Global.room_players.keys():
@@ -157,6 +185,27 @@ func _build_ranking() -> Array:
 
 	ranking.sort_custom(func(a, b): return int(a["score"]) > int(b["score"]))
 	return ranking
+
+func _process(_delta: float) -> void:
+	if label_timer == null:
+		return
+
+	# Só sai se não tiver timer armado
+	if turn_end_server_ms <= 0:
+		label_timer.text = ""
+		return
+
+	if Global.room_status != GameConfig.RoomStatus.PLAYING:
+		label_timer.text = ""
+		return
+
+	var server_now_ms: int = Time.get_ticks_msec() + server_offset_ms
+	var remaining_ms: int = turn_end_server_ms - server_now_ms
+	var remaining_sec: int = (max(0.0, remaining_ms / 1000.0))+1
+
+	label_timer.text = "Tempo: %d" % remaining_sec
+
+
 
 func _on_game_over(payload: Dictionary) -> void:
 	Global.last_game_result = payload

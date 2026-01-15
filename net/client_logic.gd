@@ -19,6 +19,8 @@ signal game_over(payload: Dictionary)
 var room_data: Dictionary = {}          # último RECEIVE_ROOM_UPDATE completo
 var players_details: Array = []         # room_data["players_details"] (lista)
 var token_owner: int = -1               # 
+var server_offset_ms: int = 0
+
 
 var _did_emit_game_started := false
 
@@ -99,6 +101,9 @@ func _on_room_updated(new_room_data: Dictionary) -> void:
 	# players_details (lista) e room_players (dict/cache pra UI)
 	players_details = room_data.get("players_details", [])
 	global.room_players = _players_list_to_dict(players_details)
+	
+	if room_data.has("server_now_ms"):
+		server_offset_ms = int(room_data["server_now_ms"]) - Time.get_ticks_msec()
 	
 	send_room_state_changed_to_UI.emit(room_data)
 	

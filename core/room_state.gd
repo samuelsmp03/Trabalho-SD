@@ -43,6 +43,10 @@ class RoomState:
 	var target_player_count: int
 	var board_size: int
 	
+	# Gerenciador do tempo de turno na sala
+	var turn_duration_sec: float
+	var turn_started_server_ms: int
+	
 	func _init(room_id: String, host_id: int, p_target_player_count: int, p_board_size: int):
 		id = room_id
 		players = [host_id]
@@ -54,6 +58,10 @@ class RoomState:
 		target_player_count = p_target_player_count
 		board_size = p_board_size 
 		
+		# tempo padrão do turno
+		turn_duration_sec = GameConfig.TURN_TIME_SEC
+		turn_started_server_ms = 0  # ainda não começou/sem turno rodando
+		
 	# converte o objeto RoomState para um dicionário 
 	func to_dict() -> Dictionary:
 		return {
@@ -63,7 +71,10 @@ class RoomState:
 			"token_owner": token_owner,
 			"status": status,
 			"target_player_count": target_player_count,
-			"board_size": board_size
+			"board_size": board_size,
+			
+			"turn_duration_sec": turn_duration_sec,
+			"turn_started_server_ms": turn_started_server_ms
 		}
 		
 		

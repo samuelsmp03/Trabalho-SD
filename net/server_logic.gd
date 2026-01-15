@@ -89,6 +89,8 @@ func _on_peer_disconnected(id: int):
 					if old_idx == -1:
 						old_idx = 0
 					var next_idx: int = old_idx % room.players.size()
+					_send_room_info_update(r_id)
+					_restart_turn_timer(r_id)
 					room.token_owner = int(room.players[next_idx])
 
 				# Se sobrou só 1, encerra e manda pro ranking
@@ -262,6 +264,7 @@ func handle_make_move(payload: Dictionary, sender_id: int) -> void:
 	if not bool(payload.get("scored", false)):
 		_next_turn(r_id)  #passa turno
 	else:
+		_restart_turn_timer(r_id)
 		_send_room_info_update(r_id)  #envia atualização da sala para todos. Inclusive a informação de quem está com o token
 
 
@@ -358,12 +361,16 @@ func _ensure_unique_color(room_id: String, requested_color: String) -> String:
 func _restart_turn_timer(r_id: String) -> void:
 	if not rooms.has(r_id):
 		return
+		
+	var room = rooms[r_id]
+	
+	# Marca início oficial deste turno
+	room.turn_started_server_ms = Time.get_ticks_msec()
 
 	# incrementa geração do timer dessa sala
 	var gen: int = int(turn_timer_gen.get(r_id, 0)) + 1
 	turn_timer_gen[r_id] = gen
 
-	var room = rooms[r_id]
 	var expected_owner: int = int(room.token_owner)
 
 	# cria timer (não bloqueia, apenas dispara callback depois)
@@ -387,7 +394,7 @@ func _restart_turn_timer(r_id: String) -> void:
 		if int(rr.token_owner) != expected_owner:
 			return
 
-		print("[SERVIDOR] Tempo esgotado na sala ", r_id, " para player ", expected_owner, ". Passando turno.")
+		#print("[SERVIDOR] Tempo esgotado na sala ", r_id, " para player ", expected_owner, ". Passando turno.")
 		_next_turn(r_id)
 	)
 
@@ -402,6 +409,7 @@ func _send_room_info_update(r_id: String):
 	var room = rooms[r_id]  #Guarda a sala
 
 	var room_data = room.to_dict() # Mantem os dados em um dict
+	room_data["server_now_ms"] = Time.get_ticks_msec()
 
 	#criando lista com detalhes de cada jogador para enviar também no pacote de payload
 	var players_list = []
@@ -428,8 +436,8 @@ func _next_turn (r_id:String):
 	print("[SERVIDOR] Turno passou de ", room.players[current_idx], " para ", room.token_owner)
 
 	#Sincronizando com todos
-	_send_room_info_update(r_id)
 	_restart_turn_timer(r_id) 
+	_send_room_info_update(r_id)
 
 
 
@@ -442,9 +450,9 @@ func _begin_game(room_id: String):
 
 	for player_id in room.players:
 		NetworkManager.send_start_game_to(player_id)
-
-	_send_room_info_update(room_id)
+	
 	_restart_turn_timer(room_id) 
+	_send_room_info_update(room_id)
 
 
 
