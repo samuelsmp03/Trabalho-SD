@@ -31,19 +31,87 @@ func _on_peer_connected(id: int):
 	players[id] = RoomState.PlayerState.new(id, "Aguardando...", "", "#FFFFFF")
 
 
-func _on_peer_disconnected(id:int):
-	print ("[SERVIDOR] Peer desconectado: ", id)
+func _on_peer_disconnected(id: int):
+	print("[SERVIDOR] Peer desconectado: ", id)
 
-	# TODO: Depois temos que add aqui a função para tirar ele da sala e avisar os outros
-	# Ou fazer o tratamento necessário para reconexão
-	# Por enquanto, estamos apenas limpando o registro
+	var r_id: String = peer_to_room.get(id, "")
+	if r_id != "" and rooms.has(r_id):
+		var room = rooms[r_id]
+
+		# Guarda ordem antiga para passar token corretamente (PLAYING)
+		var old_players: Array = room.players.duplicate()
+		var old_idx := old_players.find(id)
+
+		# Remove o jogador da sala
+		room.players.erase(id)
+
+		# -------------------------
+		# SALA DE ESPERA (WAITING)
+		# -------------------------
+		if room.status == GameConfig.RoomStatus.WAITING:
+			# Se não sobrou ninguém, apaga a sala
+			if room.players.size() == 0:
+				rooms.erase(r_id)
+			else:
+				# Se o host caiu e sobrou alguém, promove
+				if int(room.host) == int(id):
+					room.host = int(room.players[0])
+
+				# Mantém token_owner consistente (na espera, costuma ser o host)
+				if int(room.token_owner) == int(id):
+					room.token_owner = int(room.host)
+
+				_send_room_info_update(r_id)
+
+		# -------------------------
+		# JOGO EM ANDAMENTO (PLAYING)
+		# -------------------------
+		elif room.status == GameConfig.RoomStatus.PLAYING:
+			# Sala vazia? apaga
+			if room.players.size() == 0:
+				rooms.erase(r_id)
+			else:
+				# Se quem caiu estava na vez e ainda restou mais de 1, passa o token
+				if int(room.token_owner) == int(id) and room.players.size() > 1:
+					if old_idx == -1:
+						old_idx = 0
+					var next_idx: int = old_idx % room.players.size()
+					room.token_owner = int(room.players[next_idx])
+
+				# Se sobrou só 1, encerra e manda pro ranking (payload via Messages)
+				if room.players.size() == 1:
+					var winner_id := int(room.players[0])
+
+					var ranking: Array = []
+					if players.has(winner_id):
+						var p = players[winner_id].to_dict()
+						if not p.has("score"):
+							p["score"] = 0
+						ranking.append(p)
+					else:
+						ranking.append({"id": winner_id, "name": "Jogador", "color": "#FFFFFF", "score": 0})
+
+					var payload := Messages.create_game_over_payload(ranking, winner_id)
+
+					room.status = GameConfig.RoomStatus.FINISHED
+					get_parent().send_game_over_to(winner_id, payload)
+					_send_room_info_update(r_id)
+				else:
+					_send_room_info_update(r_id)
+
+		# Outros estados
+		else:
+			# Se quiser, pode apagar sala se ficar vazia; caso contrário, só manda update
+			if room.players.size() == 0:
+				rooms.erase(r_id)
+			else:
+				_send_room_info_update(r_id)
+
+	# Limpa registros globais
 	players.erase(id)
 	peer_to_room.erase(id)
-	# TODO: remover da sala e enviar update para quem ficou
-
 
 # ---- Lógica da Sala ----
-
 
 func handle_create_room(payload: Dictionary, sender_id: int) -> void:
 	print("[SERVIDOR] PEDIDO DE CRIAÇÃO DE SALA RECEBIDO. PAYLOAD: ", payload)
