@@ -20,6 +20,8 @@ var room_data: Dictionary = {}          # último RECEIVE_ROOM_UPDATE completo
 var players_details: Array = []         # room_data["players_details"] (lista)
 var token_owner: int = -1               # 
 
+var _did_emit_game_started := false
+
 # Variáveis paraconexão/reconexão
 var _connect_retry_count := 0
 var _connecting := false
@@ -44,7 +46,7 @@ func _ready():
 	if network.has_signal("room_updated"):
 		network.room_updated.connect(_on_room_updated)
 
-	if network.has_signal("game_started"):
+	if not network.game_started.is_connected(_on_game_started):
 		network.game_started.connect(_on_game_started)
 
 	if network.has_signal("move_received"):
@@ -97,14 +99,15 @@ func _on_room_updated(new_room_data: Dictionary) -> void:
 	# players_details (lista) e room_players (dict/cache pra UI)
 	players_details = room_data.get("players_details", [])
 	global.room_players = _players_list_to_dict(players_details)
-
+	
 	send_room_state_changed_to_UI.emit(room_data)
 	
 
-
-
 func _on_game_started() -> void:
+	if _did_emit_game_started: return
+	_did_emit_game_started = true
 	game_started.emit()
+
 
 
 func _on_move_received(move_data: Dictionary) -> void:
@@ -116,7 +119,7 @@ func _on_game_over(payload: Dictionary) -> void:
 	game_over.emit(payload)
 	
 func _on_room_list_updated(list_of_rooms:Array) -> void:
-	#Envia a lista atualizada de salas para a UI, precisa disso para a cena JoinRoomByCode, para aparecer as salas lá
+	#Envia a lista atualizada de salas para a UI, precisa disso para a cena JoinRoom, para aparecer as salas lá
 	send_room_list_updated_to_UI.emit(list_of_rooms)
 
 # -------------------------

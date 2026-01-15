@@ -10,6 +10,7 @@ var rooms: Dictionary = {}    # {room_id(String): RoomState}
 var peer_to_room: Dictionary = {}  # Atalho mais rápido entre salas e jogadores, peer_id(int): room_id (String) }
 
 
+
 # ---- Função de inicialização do servidor ----
 # OBS:  quem inicia o servidor de rede é o Network.gd (autoload).
 # Então este script só precisa "escutar" eventos de conexão/desconexão.
@@ -94,7 +95,7 @@ func _on_peer_disconnected(id: int):
 					var payload := Messages.create_game_over_payload(ranking, winner_id)
 
 					room.status = GameConfig.RoomStatus.FINISHED
-					get_parent().send_game_over_to(winner_id, payload)
+					NetworkManager.send_game_over_to(winner_id, payload)
 					_send_room_info_update(r_id)
 				else:
 					_send_room_info_update(r_id)
@@ -241,7 +242,7 @@ func handle_make_move(payload: Dictionary, sender_id: int) -> void:
 	for p_id in room.players:
 		
 		#  O Network.gd (autoload) é a ponte RPC, por isso é get_parent
-		get_parent().send_broadcast_move_to(p_id, sync_data)
+		NetworkManager.send_broadcast_move_to(p_id, sync_data)
 
 	# Depois de enviar a jogada para todos, decide se passa o turno ou se apenas atualiza
 	if not bool(payload.get("scored", false)):
@@ -271,7 +272,7 @@ func handle_room_list(sender_id: int) -> void:
 		
 		list_of_rooms.append(info)
 
-	get_parent().send_room_list_to(sender_id, list_of_rooms)
+	NetworkManager.send_room_list_to(sender_id, list_of_rooms)
 
 # ---- Funções INTERNAS (começam com _) ----
 func handle_game_over(payload: Dictionary, sender_id: int) -> void:
@@ -289,7 +290,7 @@ func handle_game_over(payload: Dictionary, sender_id: int) -> void:
 	print("[SERVIDOR]FIM DE JOGO NA SALA:", r_id)
 
 	for p_id in room.players:
-		get_parent().send_game_over_to(p_id, payload)
+		NetworkManager.send_game_over_to(p_id, payload)
 
 	_send_room_info_update(r_id)
 
@@ -324,7 +325,7 @@ func _send_room_info_update(r_id: String):
 	room_data["players_details"] = players_list
 	for p_id in room.players:
 		# Envia room_update para o Network que en
-		get_parent().send_room_update_to(p_id, room_data)
+		NetworkManager.send_room_update_to(p_id, room_data)
 
 	print("[SERVIDOR] Atualização da sala ", r_id, " enviada para ", room.players.size(), " jogadores.")
 
@@ -351,8 +352,7 @@ func _begin_game(room_id: String):
 	print("[SERVIDOR] Iniciando jogo na sala: ", room_id)
 
 	for player_id in room.players:
-		
-		get_parent().send_start_game_to(player_id)
+		NetworkManager.send_start_game_to(player_id)
 
 	_send_room_info_update(room_id)
 
