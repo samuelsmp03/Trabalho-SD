@@ -56,7 +56,6 @@ func start_dedicated_server(port: int):
 
 	print("[NETWORK] Servidor online na porta ", port)
 
-
 func start_client(ip: String, port: int):
 	# fecha peer anterior se existir
 	if multiplayer.multiplayer_peer:
@@ -97,7 +96,6 @@ func _on_connected():
 	
 	print("[NETWORK] Cliente conectado. my_id=", Global.my_id, " server_id=", Global.server_id)
 	
-
 
 func _on_failed():
 	push_error("[NETWORK] Falha ao conectar cliente")
@@ -193,7 +191,7 @@ func rpc_request_make_move(payload: Dictionary):
 func rpc_request_room_list():
 	if multiplayer.is_server() and server_node:
 		server_node.handle_room_list(multiplayer.get_remote_sender_id())
-
+		
 @rpc("any_peer", "call_remote", "reliable")
 func rpc_request_game_over(payload: Dictionary):
 	if multiplayer.is_server() and server_node:
@@ -215,19 +213,19 @@ func rpc_receive_room_update(room_data: Dictionary):
 	#if scene and scene.name in ["JoinRoomByCode", "PlayerProfile"]:
 		#goto_wait_room.emit() # Emite-se o sinal de ida para a sala de espera
 
-@rpc("any_peer", "call_remote", "reliable")
+@rpc("authority", "call_remote", "reliable")
 func rpc_receive_room_list(list: Array):
 	room_list_updated.emit(list)
 
-@rpc("any_peer", "call_remote", "reliable")
+@rpc("authority", "call_remote", "reliable")
 func rpc_start_game():
 	game_started.emit()
 
-@rpc("any_peer", "call_remote", "reliable")
+@rpc("authority", "call_remote", "reliable")
 func rpc_broadcast_move(move_data: Dictionary):
 	move_received.emit(move_data)
 
 
-@rpc("any_peer", "call_remote", "reliable")
+@rpc("authority", "call_remote", "reliable")
 func rpc_broadcast_game_over(payload: Dictionary):
 	game_over.emit(payload)

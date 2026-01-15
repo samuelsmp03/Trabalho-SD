@@ -14,7 +14,7 @@ func _ready():
 	if ClientLogic.has_signal("send_room_list_updated_to_UI"): 
 		ClientLogic.send_room_list_updated_to_UI.connect(_on_room_list_updated)
 	else:
-		push_error("[JoinRoomByCode] ClientLogic não tem o sinal send_room_list_updated_to_UI")
+		push_error("[JoinRoom] ClientLogic não tem o sinal send_room_list_updated_to_UI")
 
 	# pede lista assim que abrir a tela
 	ClientLogic.get_rooms_list()
@@ -29,7 +29,7 @@ func _on_ok_button_pressed():
 	var room_code = code_input.text.strip_edges().to_upper() 
 	
 	if room_code == "":
-		print("Erro: Digite um código de sala!")
+		print("[JOIN ROOM] Erro: Digite um código de sala!")
 		return
 
 	ClientLogic.join_room(room_code)

@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bus5jab1p8m3k"]
 
 [ext_resource type="Texture2D" uid="uid://cwp0q1f51q04k" path="res://assets/backgrounds/Paper Texture2.jpg" id="1_cguw2"]
-[ext_resource type="Script" uid="uid://h54fwufkwogp" path="res://scenes_scripts/join_room_by_code.gd" id="2_1a4ag"]
+[ext_resource type="Script" uid="uid://h54fwufkwogp" path="res://scenes_scripts/join_room.gd" id="2_1a4ag"]
 [ext_resource type="FontFile" uid="uid://dai5fj1ja8e0p" path="res://assets/fonts/Swansea/SwanseaItalic-AwqD.ttf" id="3_cvuic"]
 [ext_resource type="Texture2D" uid="uid://riwpjuhsarcn" path="res://assets/icons/back.jpg" id="4_xk3ur"]
 

@@ -13,10 +13,8 @@ func _ready():
 	# Mostra  fluxo que está acontecendo no console
 	if Global.pending_action == "create":
 		print("[PLAYER_PROFILE] Perfil para CRIAR sala: ", Global.pending_room_id)
-	elif Global.pending_action == "join_code":
-		print("[PLAYER_PROFILE] Perfil para ENTRAR via código")
-	elif Global.selected_room_id != "":
-		print("[PLAYER_PROFILE] Perfil para ENTRAR em sala selecionada: ", Global.selected_room_id)
+	elif Global.pending_action == "join":
+		print("[PLAYER_PROFILE] Perfil para ENTRAR em sala existente")
 	else:
 		print("[PLAYER_PROFILE] Configure Seu Perfil")
 
@@ -62,7 +60,7 @@ func _on_ok_pressed():
 	# DECISÃO DO FLUXO (ou cria sala vindo do Create Room, ou está entrando em sala existente - selecionada )
 	# -------------------------
 
-	# PRIMEIRO Criando sala (veio do CreateRoom)
+	# Criando sala (veio do CreateRoom)
 	if Global.pending_action == "create":
 		# opcional: protege caso ainda esteja conectando
 		if Global.my_id == 0:
@@ -88,24 +86,16 @@ func _on_ok_pressed():
 		get_tree().call_deferred("change_scene_to_file", "res://scenes/WaitRoom.tscn")
 		return
 
-	# SEGUNDO Entrando em sala selecionada - TODO: FALTA IMPLEMENTAR
-	elif Global.selected_room_id != "":
-		print("=== [PLAYER_PROFILE] ENTRANDO EM SALA EXISTENTE (selecionada) ===")
-		ClientLogic.join_room(Global.selected_room_id)
-		get_tree().call_deferred("change_scene_to_file", "res://scenes/WaitRoom.tscn")
+	# TERCEIRO Entrando em sala existente (veio do botão Entrar Sala)
+	elif Global.pending_action == "join":
+		print("[PLAYER_PROFILE] Indo para escolha de sala sala...")
+		Global.clear_pending()
+		get_tree().call_deferred("change_scene_to_file", "res://scenes/JoinRoom.tscn")
 		return
 
-	# TERCEIRO Entrando via código (veio do botão Entrar Sala)
-	elif Global.pending_action == "join_code":
-		print("[PLAYER_PROFILE] Indo para inserir código da sala...")
-		# não limpa pending_action aqui; o Join Room by Code ainda depende disso 
-		get_tree().call_deferred("change_scene_to_file", "res://scenes/JoinRoomByCode.tscn")
-		return
-
-	# 4) fallback -> TODO:  Depois mudar esse fallback para entrar por selecao de sala
 	else:
-		print("[PLAYER_PROFILE] Fluxo desconhecido. Indo para JoinRoomByCode...")
-		get_tree().call_deferred("change_scene_to_file", "res://scenes/JoinRoomByCode.tscn")
+		print("[PLAYER_PROFILE] Fluxo desconhecido. Indo para JoinRoom...")
+		get_tree().call_deferred("change_scene_to_file", "res://scenes/JoinRoom.tscn")
 
 
 func _shake_node(node):
