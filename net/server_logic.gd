@@ -8,6 +8,7 @@ const Messages = preload("res://core/messages.gd")
 var players : Dictionary = {} # {peer_id(int) : PlayerState}
 var rooms: Dictionary = {}    # {room_id(String): RoomState}
 var peer_to_room: Dictionary = {}  # Atalho mais rápido entre salas e jogadores, peer_id(int): room_id (String) }
+var turn_timer_gen: Dictionary = {} # { room_id: int }
 
 # Cores disponíveis
 const AVAILABLE_COLORS: Array[String] = [
@@ -62,6 +63,7 @@ func _on_peer_disconnected(id: int):
 			# Se não sobrou ninguém, apaga a sala
 			if room.players.size() == 0:
 				rooms.erase(r_id)
+				turn_timer_gen.erase(r_id)
 			else:
 				# Se o host caiu e sobrou alguém, promove
 				if int(room.host) == int(id):
@@ -80,6 +82,7 @@ func _on_peer_disconnected(id: int):
 			# Sala vazia? apaga
 			if room.players.size() == 0:
 				rooms.erase(r_id)
+				turn_timer_gen.erase(r_id)
 			else:
 				# Se quem caiu estava na vez e ainda restou mais de 1, passa o token
 				if int(room.token_owner) == int(id) and room.players.size() > 1:
@@ -88,7 +91,7 @@ func _on_peer_disconnected(id: int):
 					var next_idx: int = old_idx % room.players.size()
 					room.token_owner = int(room.players[next_idx])
 
-				# Se sobrou só 1, encerra e manda pro ranking (payload via Messages)
+				# Se sobrou só 1, encerra e manda pro ranking
 				if room.players.size() == 1:
 					var winner_id := int(room.players[0])
 
@@ -111,9 +114,9 @@ func _on_peer_disconnected(id: int):
 
 		# Outros estados
 		else:
-			# Se quiser, pode apagar sala se ficar vazia; caso contrário, só manda update
 			if room.players.size() == 0:
 				rooms.erase(r_id)
+				turn_timer_gen.erase(r_id)
 			else:
 				_send_room_info_update(r_id)
 
@@ -298,6 +301,9 @@ func handle_game_over(payload: Dictionary, sender_id: int) -> void:
 		return
 
 	room.status = GameConfig.RoomStatus.FINISHED
+	
+	turn_timer_gen.erase(r_id) # limpa estado do timer dessa sala
+
 	print("[SERVIDOR]FIM DE JOGO NA SALA:", r_id)
 
 	for p_id in room.players:
@@ -347,6 +353,44 @@ func _ensure_unique_color(room_id: String, requested_color: String) -> String:
 
 	# Fallback (não deveria acontecer se max_players <= 6)
 	return AVAILABLE_COLORS[randi() % AVAILABLE_COLORS.size()]
+	
+	
+func _restart_turn_timer(r_id: String) -> void:
+	if not rooms.has(r_id):
+		return
+
+	# incrementa geração do timer dessa sala
+	var gen: int = int(turn_timer_gen.get(r_id, 0)) + 1
+	turn_timer_gen[r_id] = gen
+
+	var room = rooms[r_id]
+	var expected_owner: int = int(room.token_owner)
+
+	# cria timer (não bloqueia, apenas dispara callback depois)
+	var t := get_tree().create_timer(float(GameConfig.TURN_TIME_SEC))
+
+	# quando o timer estourar, checa se ainda é válido
+	t.timeout.connect(func():
+		# sala ainda existe?
+		if not rooms.has(r_id):
+			return
+
+		# timer ainda é o mais recente?
+		if int(turn_timer_gen.get(r_id, 0)) != gen:
+			return
+
+		var rr = rooms[r_id]
+
+		# só aplica se o jogo estiver rolando e ainda for o mesmo dono do token
+		if rr.status != GameConfig.RoomStatus.PLAYING:
+			return
+		if int(rr.token_owner) != expected_owner:
+			return
+
+		print("[SERVIDOR] Tempo esgotado na sala ", r_id, " para player ", expected_owner, ". Passando turno.")
+		_next_turn(r_id)
+	)
+
 
 
 func _send_room_info_update(r_id: String):
@@ -385,6 +429,8 @@ func _next_turn (r_id:String):
 
 	#Sincronizando com todos
 	_send_room_info_update(r_id)
+	_restart_turn_timer(r_id) 
+
 
 
 func _begin_game(room_id: String):
@@ -398,6 +444,8 @@ func _begin_game(room_id: String):
 		NetworkManager.send_start_game_to(player_id)
 
 	_send_room_info_update(room_id)
+	_restart_turn_timer(room_id) 
+
 
 
 #TODO: Reconexão: receive e request
