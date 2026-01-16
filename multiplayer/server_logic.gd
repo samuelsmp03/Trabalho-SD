@@ -190,7 +190,6 @@ func handle_join_room(payload:Dictionary, sender_id: int) -> void:
 
 	if not rooms.has(r_id):
 		print("[SERVIDOR] Erro: Sala ", r_id, " não encontrada.")
-		#TODO: Depois temos que devolver o erro para o cliente
 		return
 
 	var room = rooms[r_id]

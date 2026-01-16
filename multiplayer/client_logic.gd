@@ -66,9 +66,6 @@ func _ready():
 	if not network.multiplayer.connection_failed.is_connected(_on_connection_failed):
 		network.multiplayer.connection_failed.connect(_on_connection_failed)
 
-	if not network.multiplayer.server_disconnected.is_connected(_on_server_disconnected):
-		network.multiplayer.server_disconnected.connect(_on_server_disconnected)
-
 	
 
 # -------------------------
@@ -223,10 +220,6 @@ func _on_connection_failed() -> void:
 		Messages.EVT_CONNECTION_ESTABLISH_FAILED
 	)
 
-func _on_server_disconnected() -> void:
-	#TODO: tratar queda do servidor durante o jogo
-	pass
 
-#TODO: on_client_disconnected para tratar queda do cliente durante o jogo
 
 	
