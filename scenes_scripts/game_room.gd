@@ -6,7 +6,7 @@ extends Node
 
 
 @onready var ClientLogic: Node = get_node("/root/ClientLogic")
-const GameConfig = preload("res://core/game_config.gd")
+const GameConfig = preload("res://domain/game_config.gd")
 
 
 const DEFAULT_COLOR_HEX := "#FFFFFF"

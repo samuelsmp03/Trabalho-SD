@@ -9,7 +9,7 @@ extends CanvasLayer
 @onready var global := get_node("/root/Global")
 @onready var dialog: AcceptDialog = $ErrorDialog
 
-const Messages = preload("res://core/messages.gd")
+const Messages = preload("res://domain/messages.gd")
 
 var _showing := false   #evita abrir dois diálogos ao mesmo tempo
 var _current_event: Dictionary = {}  #guarda o evento que está sendo exibido no momento

@@ -5,8 +5,8 @@ extends Node
 # Não executa RPC diretamente. Escuta sinais do NetworkManager e repassa para a UI e vice versa.
 
 
-const Messages = preload("res://core/messages.gd")
-const GameConfig = preload("res://core/game_config.gd")
+const Messages = preload("res://domain/messages.gd")
+const GameConfig = preload("res://domain/game_config.gd")
 
 #signal room_state_changed(room_data: Dictionary)
 

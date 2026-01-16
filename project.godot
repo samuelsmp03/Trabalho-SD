@@ -17,9 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Global="*res://autoload/global_data.gd"
-NetworkManager="*res://net/network.gd"
-ClientLogic="*res://net/client_logic.gd"
+Global="*res://domain/global_data.gd"
+NetworkManager="*res://multiplayer/network.gd"
+ClientLogic="*res://multiplayer/client_logic.gd"
 UINotifier="*res://scenes/auxiliary_nodes/ui_notifier.tscn"
 
 [display]

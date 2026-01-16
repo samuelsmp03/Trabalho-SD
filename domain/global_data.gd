@@ -1,7 +1,7 @@
 # global_data.gd
 extends Node
 
-const GameConfig = preload("res://core/game_config.gd")
+const GameConfig = preload("res://domain/game_config.gd")
 
 signal ui_event_pushed (event:Dictionary)  #sinal para enviar eventos para UI
 var _ui_queue: Array[Dictionary] = []   # fila se eventos para a UI
