@@ -1,7 +1,7 @@
 extends Node
-const GameConfig = preload("res://core/game_config.gd")
-const RoomState = preload("res://core/room_state.gd")
-const Messages = preload("res://core/messages.gd")
+const GameConfig = preload("res://domain/game_config.gd")
+const RoomState = preload("res://domain/room_state.gd")
+const Messages = preload("res://domain/messages.gd")
 
 # Variáveis Globais
 
@@ -190,7 +190,6 @@ func handle_join_room(payload:Dictionary, sender_id: int) -> void:
 
 	if not rooms.has(r_id):
 		print("[SERVIDOR] Erro: Sala ", r_id, " não encontrada.")
-		#TODO: Depois temos que devolver o erro para o cliente
 		return
 
 	var room = rooms[r_id]
@@ -453,7 +452,3 @@ func _begin_game(room_id: String):
 	
 	_restart_turn_timer(room_id) 
 	_send_room_info_update(room_id)
-
-
-
-#TODO: Reconexão: receive e request

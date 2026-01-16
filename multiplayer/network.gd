@@ -4,16 +4,15 @@ extends Node
 # O cliente e o servidor o utilizam para fazer as chamadas RPC.
 
 
-const ServerLogic = preload("res://net/server_logic.gd")
-const Messages = preload("res://core/messages.gd")
+const ServerLogic = preload("res://multiplayer/server_logic.gd")
+const Messages = preload("res://domain/messages.gd")
 
 
 # Sinais
 
 signal room_list_updated(list_of_rooms: Array) # Lista de Salas (Network -> Cliente)
 signal room_updated(room_data: Dictionary) # Atualização de Sala (Network -> Cliente)
-signal game_started # TODO servidor não emite isso ainda
-#signal goto_wait_room #TODO servidor não emite isso ainda
+signal game_started 
 signal move_received(move_data: Dictionary) # Cliente recebe jogada (Network -> Cliente)
 signal game_over(payload: Dictionary) # Servidor anunciou fim de jogo (Servidor -> Network -> Cliente)
 
@@ -103,7 +102,6 @@ func _on_failed():
 func _on_server_disconnected():
 	Global.push_ui_event("Servidor desconectou",Messages.EVT_SERVER_DISCONNECTED)
 	push_error("[NETWORK] Servidor desconectou")
-	# TODO: tratar queda durante o jogo
 
 
 # --- API para o Client Logic ---

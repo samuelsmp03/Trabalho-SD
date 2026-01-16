@@ -1,6 +1,6 @@
 extends RefCounted
 
-const GameConfig = preload("res://core/game_config.gd")
+const GameConfig = preload("res://domain/game_config.gd")
 # ===================================================
 # CLASSE: PlayerState
 # Representação do estado do jogador no SERVIDOR

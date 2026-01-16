@@ -5,8 +5,8 @@ extends Node
 # Não executa RPC diretamente. Escuta sinais do NetworkManager e repassa para a UI e vice versa.
 
 
-const Messages = preload("res://core/messages.gd")
-const GameConfig = preload("res://core/game_config.gd")
+const Messages = preload("res://domain/messages.gd")
+const GameConfig = preload("res://domain/game_config.gd")
 
 #signal room_state_changed(room_data: Dictionary)
 
@@ -65,9 +65,6 @@ func _ready():
 
 	if not network.multiplayer.connection_failed.is_connected(_on_connection_failed):
 		network.multiplayer.connection_failed.connect(_on_connection_failed)
-
-	if not network.multiplayer.server_disconnected.is_connected(_on_server_disconnected):
-		network.multiplayer.server_disconnected.connect(_on_server_disconnected)
 
 	
 
@@ -223,10 +220,6 @@ func _on_connection_failed() -> void:
 		Messages.EVT_CONNECTION_ESTABLISH_FAILED
 	)
 
-func _on_server_disconnected() -> void:
-	#TODO: tratar queda do servidor durante o jogo
-	pass
 
-#TODO: on_client_disconnected para tratar queda do cliente durante o jogo
 
 	

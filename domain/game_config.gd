@@ -18,8 +18,8 @@ const MAX_PLAYERS = 5
 
 
 # Configuração de Tabuleiro
-const DEFAULT_BOARD_SIZE = 3 #TODO VOLTAR PARA 5
-const MIN_BOARD_SIZE = 5
+const DEFAULT_BOARD_SIZE = 5
+const MIN_BOARD_SIZE = 3
 const MAX_BOARD_SIZE = 10
 
 # Tempo Limite
